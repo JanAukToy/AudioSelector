@@ -1,1 +1,1 @@
-# sample1
+# Dlephi　サンプルプログラム
