@@ -1,0 +1,36 @@
+unit cls_AudioDevices;
+
+interface
+
+uses
+  System.SysUtils, System.Classes,
+  CWMIBase, CSoundDeviceInfo;
+
+type
+  TAudioDevices = class
+  private
+  public
+    constructor Create();
+    destructor Destroy; override;
+  end;
+
+implementation
+
+{ TAudioDevices }
+
+//******************************************************************************
+// コンストラクター
+constructor TAudioDevices.Create;
+begin
+  ;
+end;
+
+//******************************************************************************
+// デストラクター
+destructor TAudioDevices.Destroy;
+begin
+
+  inherited;
+end;
+
+end.

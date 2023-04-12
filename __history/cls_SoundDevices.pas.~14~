@@ -1,0 +1,66 @@
+//******************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+//******************************************************************************
+unit cls_SoundDevices;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.Win.ComObj, System.SyncObjs,
+  Winapi.Windows, Winapi.ActiveX,
+
+  myMMDeviceAPI;
+
+type
+  TSoundDevices = class
+  private
+    f_DeviceEnumerator: IMMDeviceEnumerator;
+    f_DeviceCollection: IMMDeviceCollection;
+  public
+    constructor Create();
+    destructor Destroy; override;
+
+    function GetDeviceCollection(): Boolean;
+  end;
+
+implementation
+
+uses
+  System.StrUtils;
+
+{ TAudioDevices }
+
+//******************************************************************************
+// コンストラクター
+constructor TSoundDevices.Create;
+begin
+  if CoCreateInstance(CLSID_IMMDeviceEnumerator, nil, CLSCTX_INPROC_SERVER,
+    IID_IMMDeviceEnumerator, f_DeviceEnumerator) = S_OK then
+  begin
+  end;
+end;
+
+//******************************************************************************
+// デストラクター
+destructor TSoundDevices.Destroy;
+begin
+  ;
+
+  inherited;
+end;
+
+//******************************************************************************
+// デバイスコレクション取得
+function TSoundDevices.GetDeviceCollection: Boolean;
+begin
+  Result := False;
+
+  if Assigned(f_DeviceEnumerator) then
+  begin
+    Result := f_DeviceEnumerator.EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, f_DeviceCollection) = S_OK;
+  end;
+end;
+
+
+end.

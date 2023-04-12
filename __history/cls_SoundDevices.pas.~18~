@@ -1,0 +1,88 @@
+//******************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+//******************************************************************************
+unit cls_SoundDevices;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.Win.ComObj, System.SyncObjs,
+  Winapi.Windows, Winapi.ActiveX, System.Generics.Collections,
+
+  myMMDeviceAPI;
+
+type
+  TSoundDevices = class
+  private
+    f_DeviceEnumerator: IMMDeviceEnumerator;
+    f_DeviceCollection: IMMDeviceCollection;
+
+    f_DeviceList: TList<string>;
+  public
+    constructor Create();
+    destructor Destroy; override;
+
+    function GetDeviceCollection(): Boolean;
+  end;
+
+implementation
+
+uses
+  System.StrUtils, Winapi.PropSys;
+
+{ TAudioDevices }
+
+//******************************************************************************
+// コンストラクター
+constructor TSoundDevices.Create;
+begin
+  f_DeviceList := TList<string>.Create;
+
+  if CoCreateInstance(CLSID_IMMDeviceEnumerator, nil, CLSCTX_INPROC_SERVER,
+    IID_IMMDeviceEnumerator, f_DeviceEnumerator) <> S_OK then
+  begin
+    f_DeviceEnumerator := nil;
+  end;
+end;
+
+//******************************************************************************
+// デストラクター
+destructor TSoundDevices.Destroy;
+begin
+  FreeAndNil(f_DeviceList);
+
+  inherited;
+end;
+
+//******************************************************************************
+// デバイスコレクション取得
+function TSoundDevices.GetDeviceCollection: Boolean;
+var
+  ii: Cardinal;
+  l_Interger: Cardinal;
+  l_Device: IMMDevice;
+  l_Property: IPropertyStore;
+begin
+  Result := False;
+
+  if Assigned(f_DeviceEnumerator) then
+  begin
+    if (f_DeviceEnumerator.EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, f_DeviceCollection) = S_OK) and
+      (f_DeviceCollection.GetCount(l_Interger) = S_OK) then
+    begin
+      for ii := 0 to l_Interger - 1 do
+      begin
+        if f_DeviceCollection.Item(ii, l_Device) = S_OK then
+        begin
+          l_Device.OpenPropertyStore(STGM_READ, );
+
+          Result := True;
+        end;
+      end;
+    end;
+  end;
+end;
+
+
+end.

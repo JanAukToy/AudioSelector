@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2023/04/11 23:17:40.000.797,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2023/04/11 23:17:44.000.028,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\Unit1.dfm=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Unit1.dfm</Transaction>
+    <Transaction>2023/04/11 23:17:44.000.028,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Unit1.pas</Transaction>
+    <Transaction>2023/04/11 23:17:47.000.287,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Project1.dproj</Transaction>
+    <Transaction>2023/04/11 23:35:50.000.110,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Unit1.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Form_Main.pas</Transaction>
+    <Transaction>2023/04/11 23:35:50.000.110,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Unit1.dfm=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Form_Main.dfm</Transaction>
+    <Transaction>2023/04/11 23:35:55.000.061,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Project1.dproj=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\sample1.dproj</Transaction>
+    <Transaction>2023/04/11 23:37:54.000.283,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\README.md</Transaction>
+    <Transaction>2023/04/12 20:39:40.914,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\AudioSelector.dproj=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\sample1.dproj</Transaction>
+    <Transaction>2023/04/12 20:40:14.986,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\Unit1.pas</Transaction>
+    <Transaction>2023/04/12 20:40:20.081,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\cls_.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\Unit1.pas</Transaction>
+    <Transaction>2023/04/12 20:41:18.502,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\cls_AudioDevices.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\cls_.pas</Transaction>
+    <Transaction>2023/04/12 21:49:42.267,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\cls_SoundDevices.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\cls_AudioDevices.pas</Transaction>
+    <Transaction>2023/04/12 22:14:40.847,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\Unit1.pas</Transaction>
+    <Transaction>2023/04/12 22:15:04.783,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\MMDeviceAPIWrapper.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\Unit1.pas</Transaction>
+    <Transaction>2023/04/12 22:15:13.842,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\myMMDeviceAPIWrapper.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\MMDeviceAPIWrapper.pas</Transaction>
+    <Transaction>2023/04/12 22:15:25.497,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\myMMDeviceAPI.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\AudioSelector\myMMDeviceAPIWrapper.pas</Transaction>
+  </Transactions>
+</BorlandProject>
