@@ -16,6 +16,7 @@ const
     IID_IAudioEndpointVolume: TGUID = '{5CDF2C82-841E-4546-9722-0CF74078229A}';
     IID_IAudioClient: TGUID = '{1CB9AD4C-DBFA-4c32-B178-C2F568A703B2}';
 
+    // https://learn.microsoft.com/ja-jp/windows/win32/coreaudio/device-state-xxx-constants
     DEVICE_STATE_ACTIVE: DWORD = $00000001;
     DEVICE_STATE_DISABLED: DWORD = $00000002;
     DEVICE_STATE_NOTPRESENT: DWORD = $00000004;

@@ -14,12 +14,6 @@ uses
   JanAukToy.MMDeviceAPI;
 
 type
-  TSimpleAutdioDevice = record
-
-    Mute: Boolean;
-
-  end;
-
   TAudioDeviceManager = class
   private
     f_DeviceEnumerator: IMMDeviceEnumerator;
@@ -31,7 +25,6 @@ type
       const a_pDevice: PIMMDevice): Boolean;
     function GetDeviceByID(const a_ID: PWideChar;
       const a_pDevice: PIMMDevice): Boolean;
-    function GetAudioClient(const a_Device: IMMDevice; const a_pIAudioClient: PIAudioClient): Boolean;
   public
     constructor Create(const a_CoInitializeExFlag
       : ShortInt = COINIT_APARTMENTTHREADED);
@@ -78,9 +71,11 @@ function TAudioDeviceManager.GetDeviceCollection: Boolean;
 var
   ii: Integer;
   l_Device: IMMDevice;
+  l_AudioClient: IAudioClient;
   l_State: DWORD;
   l_ID: PWideChar;
   l_pProperty: IPropertyStore;
+  l_AudioEndpointVolume: IAudioEndpointVolume;
 begin
   Result := False;
 
@@ -96,7 +91,15 @@ begin
     // Get Count on Collection
       (f_DeviceCollection.GetCount(f_DeviceCount) = S_OK) then
     begin
-      Result := True;
+
+
+      if GetDeviceByIndex(0, @l_Device) then
+      begin
+        if l_Device.Activate(IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, nil, l_AudioEndpointVolume) = S_OK then
+        begin
+          Result := True;
+        end;
+      end;
     end;
   end;
 end;

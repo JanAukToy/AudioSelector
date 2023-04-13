@@ -76,35 +76,34 @@ type
     ['{5CDF2C82-841E-4546-9722-0CF74078229A}']
     function RegisterControlChangeNotify(pNotify: IAudioEndpointVolumeCallback)
       : HRESULT; stdcall;
-     function UnregisterControlChangeNotify(pNotify
-     : IAudioEndpointVolumeCallback): HRESULT; stdcall;
-     function GetChannelCount(out pnChannelCount: UINT): HRESULT; stdcall;
-    // function SetMasterVolumeLevel(fLevelDB: single; pguidEventContext: PGUID)
-    // : HRESULT; stdcall;
-    // function SetMasterVolumeLevelScalar(fLevelDB: single;
-    // pguidEventContext: PGUID): HRESULT; stdcall;
-    // function GetMasterVolumeLevel(out fLevelDB: single): HRESULT; stdcall;
-    // function GetMasterVolumeLevelScaler(out fLevelDB: single): HRESULT; stdcall;
-    // function SetChannelVolumeLevel(nChannel: Integer; fLevelDB: double;
-    // pguidEventContext: PGUID): HRESULT; stdcall;
-    // function SetChannelVolumeLevelScalar(nChannel: Integer; fLevelDB: double;
-    // pguidEventContext: PGUID): HRESULT; stdcall;
-    // function GetChannelVolumeLevel(nChannel: Integer; out fLevelDB: double)
-    // : HRESULT; stdcall;
-    // function GetChannelVolumeLevelScalar(nChannel: Integer; out fLevel: double)
-    // : HRESULT; stdcall;
-    //
-    // function SetMute(bMute: Boolean; pguidEventContext: PGUID)
-    // : HRESULT; stdcall;
-    // function GetMute(out bMute: Boolean): HRESULT; stdcall;
-    // function GetVolumeStepInfo(pnStep: Integer; out pnStepCount: Integer)
-    // : HRESULT; stdcall;
-    // function VolumeStepUp(pguidEventContext: PGUID): HRESULT; stdcall;
-    // function VolumeStepDown(pguidEventContext: PGUID): HRESULT; stdcall;
-    // function QueryHardwareSupport(out pdwHardwareSupportMask): HRESULT; stdcall;
-    // function GetVolumeRange(out pflVolumeMindB: double;
-    // out pflVolumeMaxdB: double; out pflVolumeIncrementdB: double)
-    // : HRESULT; stdcall;
+    function UnregisterControlChangeNotify
+      (pNotify: IAudioEndpointVolumeCallback): HRESULT; stdcall;
+    function GetChannelCount(out pnChannelCount: UINT): HRESULT; stdcall;
+    function SetMasterVolumeLevel(fLevelDB: Single; pguidEventContext: TGUID)
+      : HRESULT; stdcall;
+    function SetMasterVolumeLevelScalar(fLevelDB: Single;
+      pguidEventContext: TGUID): HRESULT; stdcall;
+    function GetMasterVolumeLevel(out fLevelDB: Single): HRESULT; stdcall;
+    function GetMasterVolumeLevelScalar(out pfLevel: Single): HRESULT; stdcall;
+    function SetChannelVolumeLevel(nChannel: UINT; fLevelDB: Single;
+      pguidEventContext: TGUID): HRESULT; stdcall;
+    function SetChannelVolumeLevelScalar(nChannel: UINT; fLevel: Single;
+      pguidEventContext: TGUID): HRESULT; stdcall;
+    function GetChannelVolumeLevel(nChannel: Integer; out pfLevelDB: Single)
+      : HRESULT; stdcall;
+    function GetChannelVolumeLevelScalar(nChannel: UINT; out pfLevel: Single)
+      : HRESULT; stdcall;
+    function SetMute(bMute: BOOL; pguidEventContext: TGUID): HRESULT; stdcall;
+    function GetMute(out bMute: BOOL): HRESULT; stdcall;
+    function GetVolumeStepInfo(out pnStep: UINT; out pnStepCount: UINT)
+      : HRESULT; stdcall;
+    function VolumeStepUp(pguidEventContext: TGUID): HRESULT; stdcall;
+    function VolumeStepDown(pguidEventContext: TGUID): HRESULT; stdcall;
+    function QueryHardwareSupport(out pdwHardwareSupportMask: DWORD)
+      : HRESULT; stdcall;
+    function GetVolumeRange(out pflVolumeMindB: Single;
+      out pflVolumeMaxdB: Single; out pflVolumeIncrementdB: Single)
+      : HRESULT; stdcall;
   end;
 
   IAudioClient = interface(IUnknown)
@@ -132,7 +131,7 @@ type
   IMMDevice = interface(IUnknown)
     ['{D666063F-1587-4E43-81F1-B948E807363F}']
     function Activate(iid: TGUID; dwClsCtx: DWORD;
-      pActivationParams: PPropVariant; out ppInterface: IAudioEndpointVolume)
+      pActivationParams: PPropVariant; out pEndpointVolume: IAudioEndpointVolume)
       : HRESULT; stdcall;
     function OpenPropertyStore(stgmAccess: DWORD;
       out ppProperties: IPropertyStore): HRESULT; stdcall;
