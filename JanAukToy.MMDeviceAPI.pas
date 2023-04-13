@@ -1,0 +1,176 @@
+// *****************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+// *****************************************************************************
+unit JanAukToy.MMDeviceAPI;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.ActiveX, Winapi.PropSys;
+
+const
+  CLSID_IMMDeviceEnumerator: TGUID = '{BCDE0395-E52F-467C-8E3D-C4579291692E}';
+
+  IID_IMMDeviceEnumerator: TGUID = '{A95664D2-9614-4F35-A746-DE8DB63617E6}';
+  IID_IAudioEndpointVolume: TGUID = '{5CDF2C82-841E-4546-9722-0CF74078229A}';
+  IID_IAudioClient: TGUID = '{1CB9AD4C-DBFA-4c32-B178-C2F568A703B2}';
+
+  // https://learn.microsoft.com/ja-jp/windows/win32/coreaudio/device-state-xxx-constants
+  DEVICE_STATE_ACTIVE: DWORD = $00000001;
+  DEVICE_STATE_DISABLED: DWORD = $00000002;
+  DEVICE_STATE_NOTPRESENT: DWORD = $00000004;
+  DEVICE_STATE_UNPLUGGED: DWORD = $00000008;
+  DEVICE_STATEMASK_ALL: DWORD = $0000000F;
+
+  AUDCLNT_STREAMFLAGS_CROSSPROCESS = $00010000;
+  AUDCLNT_STREAMFLAGS_LOOPBACK = $00020000;
+  AUDCLNT_STREAMFLAGS_EVENTCALLBACK = $00040000;
+  AUDCLNT_STREAMFLAGS_NOPERSIST = $00080000;
+  AUDCLNT_STREAMFLAGS_RATEADJUST = $00100000;
+  AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM = $80000000;
+  AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY = $08000000;
+
+type
+  EDataFlow = (eRender, eCapture, eAll, EDataFlow_enum_count);
+  ERole = (eConsole, eMultimedia, eCommunications, ERole_enum_count);
+
+  _AUDCLNT_SHAREMODE = (AUDCLNT_SHAREMODE_SHARED, AUDCLNT_SHAREMODE_EXCLUSIVE);
+  AUDCLNT_SHAREMODE = _AUDCLNT_SHAREMODE;
+
+  REFERENCE_TIME = Int64;
+
+  PIAudioClient = ^IAudioClient;
+  PIMMDevice = ^IMMDevice;
+
+  AUDIO_VOLUME_NOTIFICATION_DATA = record
+    guidEventContext: TGUID;
+    bMuted: BOOL;
+    fMasterVolume: Single;
+    nChannels: UINT;
+    afChannelVolumes: Single;
+  end;
+
+  PAUDIO_VOLUME_NOTIFICATION_DATA = ^AUDIO_VOLUME_NOTIFICATION_DATA;
+
+  tWAVEFORMATEX = record
+    wFormatTag: WORD;
+    nChannels: WORD;
+    nSamplesPerSec: DWORD;
+    nAvgBytesPerSec: DWORD;
+    nBlockAlign: WORD;
+    wBitsPerSample: WORD;
+    cbSize: WORD;
+  end;
+
+  WAVEFORMATEX = tWAVEFORMATEX;
+  PWAVEFORMATEX = ^WAVEFORMATEX;
+
+  IAudioEndpointVolumeCallback = interface(IUnknown)
+    ['{657804FA-D6AD-4496-8A60-352752AF4F89}']
+    function OnNotify(pNotify: AUDIO_VOLUME_NOTIFICATION_DATA)
+      : HRESULT; stdcall;
+  end;
+
+  IAudioEndpointVolume = interface(IUnknown)
+    ['{5CDF2C82-841E-4546-9722-0CF74078229A}']
+    function RegisterControlChangeNotify(pNotify: IAudioEndpointVolumeCallback)
+      : HRESULT; stdcall;
+    function UnregisterControlChangeNotify
+      (pNotify: IAudioEndpointVolumeCallback): HRESULT; stdcall;
+    function GetChannelCount(out pnChannelCount: UINT): HRESULT; stdcall;
+    function SetMasterVolumeLevel(fLevelDB: Single; pguidEventContext: TGUID)
+      : HRESULT; stdcall;
+    function SetMasterVolumeLevelScalar(fLevelDB: Single;
+      pguidEventContext: TGUID): HRESULT; stdcall;
+    function GetMasterVolumeLevel(out fLevelDB: Single): HRESULT; stdcall;
+    function GetMasterVolumeLevelScalar(out pfLevel: Single): HRESULT; stdcall;
+    function SetChannelVolumeLevel(nChannel: UINT; fLevelDB: Single;
+      pguidEventContext: TGUID): HRESULT; stdcall;
+    function SetChannelVolumeLevelScalar(nChannel: UINT; fLevel: Single;
+      pguidEventContext: TGUID): HRESULT; stdcall;
+    function GetChannelVolumeLevel(nChannel: Integer; out pfLevelDB: Single)
+      : HRESULT; stdcall;
+    function GetChannelVolumeLevelScalar(nChannel: UINT; out pfLevel: Single)
+      : HRESULT; stdcall;
+    function SetMute(bMute: BOOL; pguidEventContext: TGUID): HRESULT; stdcall;
+    function GetMute(out bMute: BOOL): HRESULT; stdcall;
+    function GetVolumeStepInfo(out pnStep: UINT; out pnStepCount: UINT)
+      : HRESULT; stdcall;
+    function VolumeStepUp(pguidEventContext: TGUID): HRESULT; stdcall;
+    function VolumeStepDown(pguidEventContext: TGUID): HRESULT; stdcall;
+    function QueryHardwareSupport(out pdwHardwareSupportMask: DWORD)
+      : HRESULT; stdcall;
+    function GetVolumeRange(out pflVolumeMindB: Single;
+      out pflVolumeMaxdB: Single; out pflVolumeIncrementdB: Single)
+      : HRESULT; stdcall;
+  end;
+
+  IAudioClient = interface(IUnknown)
+    ['{1CB9AD4C-DBFA-4c32-B178-C2F568A703B2}']
+    function Initialize(ShareMode: _AUDCLNT_SHAREMODE; StreamFlags: DWORD;
+      hnsBufferDuration: REFERENCE_TIME; hnsPeriodicity: REFERENCE_TIME;
+      const pFormat: WAVEFORMATEX; AudioSessionGuid: TGUID): HRESULT; stdcall;
+    function GetBufferSize(out pNumBufferFrames: UINT32): HRESULT; stdcall;
+    function GetStreamLatency(out phnsLatency: REFERENCE_TIME)
+      : HRESULT; stdcall;
+    function GetCurrentPadding(out pNumPaddingFrames: UINT32): HRESULT; stdcall;
+    function IsFormatSupported(ShareMode: AUDCLNT_SHAREMODE;
+      const pFormat: WAVEFORMATEX; out ppClosestMatch: WAVEFORMATEX)
+      : HRESULT; stdcall;
+    function GetMixFormat(out ppDeviceFormat: WAVEFORMATEX): HRESULT; stdcall;
+    function GetDevicePeriod(out phnsDefaultDevicePeriod: REFERENCE_TIME;
+      out phnsMinimumDevicePeriod: REFERENCE_TIME): HRESULT; stdcall;
+    function Start(): HRESULT; stdcall;
+    function Stop(): HRESULT; stdcall;
+    function Reset(): HRESULT; stdcall;
+    function SetEventHandle(eventHandle: THandle): HRESULT; stdcall;
+    function GetService(riid: TGUID; out ppv: Pointer): HRESULT; stdcall;
+  end;
+
+  IMMDevice = interface(IUnknown)
+    ['{D666063F-1587-4E43-81F1-B948E807363F}']
+    function Activate(iid: TGUID; dwClsCtx: DWORD;
+      pActivationParams: PPropVariant; out pEndpointVolume: IAudioEndpointVolume)
+      : HRESULT; stdcall;
+    function OpenPropertyStore(stgmAccess: DWORD;
+      out ppProperties: IPropertyStore): HRESULT; stdcall;
+    function GetId(out ppstrId: PWideChar): HRESULT; stdcall;
+    function GetState(out pdwState: DWORD): HRESULT; stdcall;
+  end;
+
+  IMMDeviceCollection = interface(IUnknown)
+    ['{0BD7A1BE-7A1A-44DB-8397-CC5392387B5E}']
+    function GetCount(out pcDevices: UINT): HRESULT; stdcall;
+    function Item(nDevice: UINT; out ppDevice: IMMDevice): HRESULT; stdcall;
+  end;
+
+  IMMNotificationClient = interface(IUnknown)
+    ['{7991EEC9-7E89-4D85-8390-6C703CEC60C0}']
+    function OnDeviceStateChanged(pwstrDeviceId: PWideChar; dwNewState: DWORD)
+      : HRESULT; stdcall;
+    function OnDeviceAdded(pwstrDeviceId: PWideChar): HRESULT; stdcall;
+    function OnDeviceRemoved(pwstrDeviceId: PWideChar): HRESULT; stdcall;
+    function OnDefaultDeviceChanged(flow: EDataFlow; role: ERole;
+      pwstrDefaultDeviceId: PWideChar): HRESULT; stdcall;
+    function OnPropertyValueChanged(pwstrDeviceId: PWideChar;
+      const key: PROPERTYKEY): HRESULT; stdcall;
+  end;
+
+  IMMDeviceEnumerator = interface(IUnknown)
+    ['{A95664D2-9614-4F35-A746-DE8DB63617E6}']
+    function EnumAudioEndpoints(dataFlow: EDataFlow; dwStateMask: DWORD;
+      out ppDevices: IMMDeviceCollection): HRESULT; stdcall;
+    function GetDefaultAudioEndpoint(dataFlow: EDataFlow; role: ERole;
+      out ppEndpoint: IMMDevice): HRESULT; stdcall;
+    function GetDevice(pwstrId: PWideChar; out ppDevice: IMMDevice)
+      : HRESULT; stdcall;
+    function RegisterEndpointNotificationCallback
+      (pClient: IMMNotificationClient): HRESULT; stdcall;
+    function UnregisterEndpointNotificationCallback
+      (pClient: IMMNotificationClient): HRESULT; stdcall;
+  end;
+
+implementation
+
+end.

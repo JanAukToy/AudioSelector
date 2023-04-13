@@ -1,0 +1,118 @@
+//******************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+//******************************************************************************
+unit cls_SoundDevices;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.Win.ComObj, System.SyncObjs, System.Generics.Collections,
+  Winapi.Windows, Winapi.ActiveX,
+
+  JanAukToy.MMDeviceAPI;
+
+type
+  // COM初期化フラグ
+  TCoInitializeExFlag = (
+    COINIT_MULTITHREADED = 0,
+    COINIT_APARTMENTTHREADED = 2,
+    COINIT_DISABLE_OLE1DDE = 4,
+    COINIT_SPEED_OVER_MEMORY = 8);
+
+  TSoundDevices = class
+  private
+    f_DeviceEnumerator: IMMDeviceEnumerator;
+    f_DeviceCollection: IMMDeviceCollection;
+
+    f_DeviceCount: Cardinal;
+  public
+    constructor Create(const a_CoInitializeExFlag: TCoInitializeExFlag = COINIT_APARTMENTTHREADED);
+    destructor Destroy; override;
+
+    function GetDeviceCollection(): Boolean;
+  end;
+
+implementation
+
+uses
+  System.StrUtils, Winapi.PropSys;
+
+{ TAudioDevices }
+
+//******************************************************************************
+// Constructor
+constructor TSoundDevices.Create(const a_CoInitializeExFlag: TCoInitializeExFlag = COINIT_APARTMENTTHREADED);
+begin
+  f_DeviceCount := 0;
+
+  if CoInitializeEx(nil, a_CoInitializeExFlag) = S_OK then
+  begin
+    // Get COM Class　https://learn.microsoft.com/ja-jp/windows/win32/coreaudio/enumerating-audio-devices
+    if CoCreateInstance(CLSID_IMMDeviceEnumerator, nil, CLSCTX_INPROC_SERVER,
+      IID_IMMDeviceEnumerator, f_DeviceEnumerator) <> S_OK then
+    begin
+      f_DeviceEnumerator := nil;
+    end;
+  end;
+end;
+
+//******************************************************************************
+// Destructor
+destructor TSoundDevices.Destroy;
+begin
+  CoUninitialize();
+
+  inherited;
+end;
+
+//******************************************************************************
+// Get Device Collection
+function TSoundDevices.GetDeviceCollection: Boolean;
+var
+  ii: Integer;
+  l_Device: IMMDevice;
+  l_State: DWORD;
+  l_ID: PWideChar;
+  l_pProperty: IPropertyStore;
+begin
+  Result := False;
+
+  // Init Device Count
+  f_DeviceCount := 0;
+
+  // Check Already Get Class
+  if Assigned(f_DeviceEnumerator) then
+  begin
+    // Enum Audio Devices... ※Render = Output Sound
+    if (f_DeviceEnumerator.EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, f_DeviceCollection) = S_OK) and
+      (f_DeviceCollection.GetCount(f_DeviceCount) = S_OK) then
+    begin
+
+
+      for ii := 0 to l_Count - 1 do
+      begin
+        // デバイス取得
+        if f_DeviceCollection.Item(ii, l_Device) = S_OK then
+        begin
+          //
+          if l_Device.GetState(l_State) = S_OK then
+          begin
+            if l_Device.GetId(l_ID) = S_OK then
+            begin
+              if l_Device.OpenPropertyStore(STGM_READ, l_pProperty) = S_OK then
+              begin
+                l_pProperty.GetValue()
+
+                Result := True;
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+
+end.

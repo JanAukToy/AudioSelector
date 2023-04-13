@@ -1,7 +1,7 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  Caption = 'Audio Selector'
+  Caption = 'JAT Audio Device Selector'
   ClientHeight = 299
   ClientWidth = 635
   Color = clBtnFace
@@ -22,10 +22,6 @@ object FormMain: TFormMain
     Height = 299
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = 232
-    ExplicitTop = 152
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     object GroupBox1: TGroupBox
       Left = 1
       Top = 1
@@ -34,9 +30,6 @@ object FormMain: TFormMain
       Align = alTop
       Caption = 'GroupBox1'
       TabOrder = 0
-      ExplicitLeft = 224
-      ExplicitTop = 96
-      ExplicitWidth = 185
       object Button1: TButton
         Left = 2
         Top = 15

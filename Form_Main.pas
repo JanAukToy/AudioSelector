@@ -10,7 +10,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
 
-  cls_SoundDevices;
+  cls_AudioDeviceManager;
 
 type
   TFormMain = class(TForm)
@@ -23,7 +23,7 @@ type
     procedure FormDestroy(Sender: TObject);
   private
     { Private 宣言 }
-    f_SoundDevices: TSoundDevices;
+    f_AudioDeviceManager: TAudioDeviceManager;
   public
     { Public 宣言 }
   end;
@@ -36,24 +36,23 @@ implementation
 {$R *.dfm}
 
 //******************************************************************************
-// コンストラクター
+// Constructor
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  // サウンドデバイスインスタンス生成
-  f_SoundDevices := TSoundDevices.Create;
+  f_AudioDeviceManager := TAudioDeviceManager.Create;
 
-  // デバイスコレクション取得
-  if f_SoundDevices.GetDeviceCollection then
+  // Get Device Collection...
+  if f_AudioDeviceManager.GetDeviceCollection then
   begin
 
   end;
 end;
 
 //******************************************************************************
-// デストラクター
+// Destructor
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
-  ;
+  FreeAndNil(f_AudioDeviceManager);
 end;
 
 end.
