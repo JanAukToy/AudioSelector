@@ -1,0 +1,78 @@
+unit cls_AudioDevice;
+
+interface
+
+uses
+  System.SysUtils,
+  System.Classes,
+  System.Win.ComObj,
+  System.SyncObjs,
+  Winapi.Windows,
+  Winapi.ActiveX,
+  JAT.MMDeviceAPI, JAT.EndpointVolume;
+
+type
+  TAudioDeviceProps = record
+    AudioEndpointVolume: IAudioEndpointVolume;
+    InterfaceFriendlyName: string;
+    DeviceDesc: string;
+    FriendlyName: string;
+    InstanceId: string;
+    ContainerId: string;
+  end;
+
+  TAudioDevice = class
+  private
+    f_AudioEndpointVolume: IAudioEndpointVolume;
+    f_Id: string;
+    f_Props: TAudioDeviceProps;
+
+    procedure GetProps();
+  public
+    constructor Create(const a_Device: IMMDevice);
+    destructor Destroy; override;
+  end;
+
+implementation
+
+{ TAudioDevice }
+
+// *****************************************************************************
+// Constructor
+constructor TAudioDevice.Create(const a_Device: IMMDevice);
+var
+  l_Id: PWideChar;
+  l_PointAudioEndpointVolume: Pointer;
+  l_PointAudioClient: Pointer;
+begin
+  // Get Device ID
+  if Succeeded(a_Device.GetId(l_Id)) then
+  begin
+    // Store ID
+    f_Id := l_Id;
+
+    // Get Audio Endpoint Volume
+    if Succeeded(a_Device.Activate(IID_IAudioEndpointVolume,
+      CLSCTX_INPROC_SERVER, nil, l_PointAudioEndpointVolume)) then
+    begin
+      f_AudioEndpointVolume := IAudioEndpointVolume(l_PointAudioEndpointVolume)
+        as IAudioEndpointVolume;
+    end;
+  end;
+end;
+
+// *****************************************************************************
+// Destructor
+destructor TAudioDevice.Destroy;
+begin
+  inherited;
+end;
+
+// *****************************************************************************
+// Get Properties
+procedure TAudioDevice.GetProps;
+begin
+  ;
+end;
+
+end.

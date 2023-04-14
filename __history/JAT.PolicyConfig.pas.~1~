@@ -1,0 +1,13 @@
+unit JAT.PolicyConfig;
+
+interface
+
+type
+  IPolicyConfig = interface(IUnknown)
+    ['{f8679f50-850a-41cf-9c72-430f290290c8}']
+
+  end;
+
+implementation
+
+end.

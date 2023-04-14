@@ -128,8 +128,11 @@
             <Form>FormMain</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="cls_AudioDeviceManager.pas"/>
-        <DCCReference Include="JanAukToy.MMDeviceAPI.pas"/>
+        <DCCReference Include="cls_AudioDeviceList.pas"/>
+        <DCCReference Include="JAT.MMDeviceAPI.pas"/>
+        <DCCReference Include="JAT.AudioClient.pas"/>
+        <DCCReference Include="JAT.EndpointVolume.pas"/>
+        <DCCReference Include="cls_AudioDevice.pas"/>
         <None Include="README.md"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

@@ -1,0 +1,136 @@
+// *****************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+// *****************************************************************************
+unit cls_AudioDeviceManager;
+
+interface
+
+uses
+  System.SysUtils,
+  System.Classes,
+  System.Win.ComObj,
+  System.SyncObjs,
+  System.Generics.Collections,
+  Winapi.Windows,
+  Winapi.ActiveX,
+
+  JAT.MMDeviceAPI, JAT.EndpointVolume, JAT.AudioClient, cls_AudioDevice;
+
+type
+  TAudioDeviceManager = class
+  private
+    f_DeviceEnumerator: IMMDeviceEnumerator;
+    f_DeviceCollection: IMMDeviceCollection;
+
+    f_DeviceList: TList<TAudioDevice>;
+
+    procedure DestroyDeviceList();
+    function GetDeviceCount(): Integer;
+  public
+    constructor Create(const a_CoInitializeExFlag
+      : ShortInt = COINIT_APARTMENTTHREADED);
+    destructor Destroy; override;
+
+    procedure ReloadAudioDeviceCollection();
+
+    property DeviceCount: Integer read GetDeviceCount;
+  end;
+
+implementation
+
+uses
+  System.StrUtils,
+  Winapi.PropSys;
+
+{ TAudioDevices }
+
+// *****************************************************************************
+// Constructor
+constructor TAudioDeviceManager.Create(const a_CoInitializeExFlag
+  : ShortInt = COINIT_APARTMENTTHREADED);
+begin
+  // Create Audio Device List
+  f_DeviceList := TList<TAudioDevice>.Create;
+
+  // Get COM ClassÅ@https://learn.microsoft.com/ja-jp/windows/win32/coreaudio/enumerating-audio-devices
+  if Succeeded(CoCreateInstance(CLSID_IMMDeviceEnumerator, nil,
+    CLSCTX_INPROC_SERVER, IID_IMMDeviceEnumerator, f_DeviceEnumerator)) then
+  begin
+    // Get Audio Device Collection
+    ReloadAudioDeviceCollection;
+  end;
+end;
+
+// *****************************************************************************
+// Destructor
+destructor TAudioDeviceManager.Destroy;
+begin
+  DestroyDeviceList();
+
+  CoUninitialize();
+
+  inherited;
+end;
+
+// *****************************************************************************
+// Destroy Device and List
+procedure TAudioDeviceManager.DestroyDeviceList;
+var
+  ii: Integer;
+begin
+  for ii := f_DeviceList.Count - 1 downto 0 do
+  begin
+    f_DeviceList[ii].Free;
+  end;
+
+  FreeAndNil(f_DeviceList);
+end;
+
+// *****************************************************************************
+// Get Device Count
+function TAudioDeviceManager.GetDeviceCount: Integer;
+begin
+  if Assigned(f_DeviceList) then
+  begin
+    Result := 0;
+    Exit;
+  end;
+
+  Result := f_DeviceList.Count;
+end;
+
+// *****************************************************************************
+// Get Audio Device Collection and Init Device List
+procedure TAudioDeviceManager.ReloadAudioDeviceCollection();
+var
+  ii: Integer;
+  l_Count: Cardinal;
+  l_Device: IMMDevice;
+begin
+  // First, Destroy Device and List
+  DestroyDeviceList();
+
+  // Check Already Get Class
+  if Assigned(f_DeviceEnumerator) then
+  begin
+    // Get Audio Device Collection (Render = Output Sound)
+    if Succeeded(f_DeviceEnumerator.EnumAudioEndpoints(eRender,
+      DEVICE_STATE_ACTIVE, f_DeviceCollection)) and
+    // Get Count on Collection
+      Succeeded(f_DeviceCollection.GetCount(l_Count)) then
+    begin
+      for ii := 0 to l_Count do
+      begin
+        // Get Device
+        if Succeeded(f_DeviceCollection.Item(ii, l_Device)) then
+        begin
+          // Add List
+          f_DeviceList.Add(TAudioDevice.Create(l_Device));
+        end;
+      end;
+    end;
+  end;
+end;
+
+end.

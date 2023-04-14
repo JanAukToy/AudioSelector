@@ -1,0 +1,145 @@
+﻿// *****************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+// *****************************************************************************
+unit cls_AudioDeviceManager;
+
+interface
+
+uses
+  System.SysUtils,
+  System.Classes,
+  System.Win.ComObj,
+  System.SyncObjs,
+  System.Generics.Collections,
+  Winapi.Windows,
+  Winapi.ActiveX,
+
+  JAT.MMDeviceAPI, JAT.EndpointVolume, JAT.AudioClient, cls_AudioDevice;
+
+type
+  TAudioDeviceManager = class
+  private
+    f_DeviceEnumerator: IMMDeviceEnumerator;
+    f_DeviceCollection: IMMDeviceCollection;
+
+    f_DeviceList: TList<TAudioDevice>;
+
+    function GetDeviceByIndex(const a_Index: Integer;
+      const a_pDevice: PIMMDevice): Boolean;
+    function GetDeviceByID(const a_ID: PWideChar;
+      const a_pDevice: PIMMDevice): Boolean;
+  public
+    constructor Create(const a_CoInitializeExFlag
+      : ShortInt = COINIT_APARTMENTTHREADED);
+    destructor Destroy; override;
+
+    function InitDeviceList(): Boolean;
+  end;
+
+implementation
+
+uses
+  System.StrUtils,
+  Winapi.PropSys;
+
+{ TAudioDevices }
+
+// *****************************************************************************
+// Constructor
+constructor TAudioDeviceManager.Create(const a_CoInitializeExFlag
+  : ShortInt = COINIT_APARTMENTTHREADED);
+begin
+  // Create Audio Device List
+  f_DeviceList := TList<TAudioDevice>.Create;
+
+  // Get COM Class　https://learn.microsoft.com/ja-jp/windows/win32/coreaudio/enumerating-audio-devices
+  if CoCreateInstance(CLSID_IMMDeviceEnumerator, nil, CLSCTX_INPROC_SERVER,
+    IID_IMMDeviceEnumerator, f_DeviceEnumerator) <> S_OK then
+  begin
+    // Initialize
+    InitDeviceList;
+  end;
+end;
+
+// *****************************************************************************
+// Destructor
+destructor TAudioDeviceManager.Destroy;
+var
+  ii: Integer;
+begin
+  for ii := f_DeviceList.Count - 1 downto 0 do
+  begin
+    f_DeviceList[ii].Free;
+  end;
+
+  f_DeviceList.Free;
+
+  CoUninitialize();
+
+  inherited;
+end;
+
+// *****************************************************************************
+// Initialize Device List
+procedure TAudioDeviceManager.InitDeviceList;
+var
+  ii: Integer;
+  l_Count: Cardinal;
+
+  l_Device: IMMDevice;
+  l_AudioClient: IAudioClient;
+  l_State: DWORD;
+  l_ID: PWideChar;
+  l_pProperty: IPropertyStore;
+  l_Pointer: Pointer;
+  l_AudioEndpointVolume: IAudioEndpointVolume;
+begin
+  Result := False;
+
+  // Check Already Get Class
+  if Assigned(f_DeviceEnumerator) then
+  begin
+    // Get Audio Device Collection (Render = Output Sound)
+    if (f_DeviceEnumerator.EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE,
+      f_DeviceCollection) = S_OK) and
+    // Get Count on Collection
+      (f_DeviceCollection.GetCount(l_Count) = S_OK) then
+    begin
+      if GetDeviceByIndex(0, @l_Device) then
+      begin
+
+      end;
+    end;
+  end;
+end;
+
+// *****************************************************************************
+// Get Device By Collection Index
+function TAudioDeviceManager.GetDeviceByIndex(const a_Index: Integer;
+  const a_pDevice: PIMMDevice): Boolean;
+begin
+  if not Assigned(f_DeviceCollection) then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  Result := f_DeviceCollection.Item(a_Index, a_pDevice^) = S_OK;
+end;
+
+// *****************************************************************************
+// Get Device By ID
+function TAudioDeviceManager.GetDeviceByID(const a_ID: PWideChar;
+  const a_pDevice: PIMMDevice): Boolean;
+begin
+  if not Assigned(f_DeviceEnumerator) then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  Result := f_DeviceEnumerator.GetDevice(a_ID, a_pDevice^) = S_OK;
+end;
+
+end.
