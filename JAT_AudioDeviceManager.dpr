@@ -7,7 +7,8 @@ uses
   JAT.MMDeviceAPI in 'JAT.MMDeviceAPI.pas',
   JAT.AudioClient in 'JAT.AudioClient.pas',
   JAT.EndpointVolume in 'JAT.EndpointVolume.pas',
-  cls_AudioDevice in 'cls_AudioDevice.pas';
+  cls_AudioDevice in 'cls_AudioDevice.pas',
+  cls_NotificationClient in 'cls_NotificationClient.pas';
 
 {$R *.res}
 

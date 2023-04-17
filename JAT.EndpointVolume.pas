@@ -9,6 +9,9 @@ interface
 uses
   Winapi.Windows, Winapi.ActiveX, Winapi.PropSys;
 
+const
+  IID_IAudioEndpointVolume: TGUID = '{5CDF2C82-841E-4546-9722-0CF74078229A}';
+
 type
   AUDIO_VOLUME_NOTIFICATION_DATA = record
     guidEventContext: TGUID;

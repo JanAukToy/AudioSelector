@@ -133,6 +133,7 @@
         <DCCReference Include="JAT.AudioClient.pas"/>
         <DCCReference Include="JAT.EndpointVolume.pas"/>
         <DCCReference Include="cls_AudioDevice.pas"/>
+        <DCCReference Include="cls_NotificationClient.pas"/>
         <None Include="README.md"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

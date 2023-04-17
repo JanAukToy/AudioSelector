@@ -1,3 +1,7 @@
+// *****************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+// *****************************************************************************
 unit cls_AudioDevice;
 
 interface
@@ -5,8 +9,6 @@ interface
 uses
   System.SysUtils,
   System.Classes,
-  System.Win.ComObj,
-  System.SyncObjs,
   Winapi.Windows,
   Winapi.ActiveX,
   Winapi.PropSys,

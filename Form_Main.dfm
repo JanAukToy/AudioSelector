@@ -22,8 +22,6 @@ object FormMain: TFormMain
     Height = 261
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 635
-    ExplicitHeight = 299
   end
   object TrayIcon1: TTrayIcon
     Icons = imglst_Icon

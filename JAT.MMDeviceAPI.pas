@@ -12,10 +12,8 @@ uses
 
 const
   CLSID_IMMDeviceEnumerator: TGUID = '{BCDE0395-E52F-467C-8E3D-C4579291692E}';
-
+  IID_IMMNotificationClient: TGUID = '{7991EEC9-7E89-4D85-8390-6C703CEC60C0}';
   IID_IMMDeviceEnumerator: TGUID = '{A95664D2-9614-4F35-A746-DE8DB63617E6}';
-  IID_IAudioEndpointVolume: TGUID = '{5CDF2C82-841E-4546-9722-0CF74078229A}';
-  IID_IAudioClient: TGUID = '{1CB9AD4C-DBFA-4c32-B178-C2F568A703B2}';
 
   DEVICE_STATE_ACTIVE: DWORD = $00000001;
   DEVICE_STATE_DISABLED: DWORD = $00000002;
@@ -56,10 +54,9 @@ type
 
   IMMDevice = interface(IUnknown)
     ['{D666063F-1587-4E43-81F1-B948E807363F}']
-    function Activate(
-
-      const iid: TGUID; dwClsCtx: DWORD; pActivationParams: PPROPVARIANT;
-      out ppInterface: Pointer): HRESULT; stdcall;
+    function Activate(const iid: TGUID; dwClsCtx: DWORD;
+      pActivationParams: PPROPVARIANT; out ppInterface: Pointer)
+      : HRESULT; stdcall;
     function OpenPropertyStore(stgmAccess: DWORD;
       out ppProperties: IPropertyStore): HRESULT; stdcall;
     function GetId(out ppstrId: PWideChar): HRESULT; stdcall;
@@ -81,7 +78,6 @@ type
     function OnDefaultDeviceChanged(flow: EDataFlow; role: ERole;
       pwstrDefaultDeviceId: PWideChar): HRESULT; stdcall;
     function OnPropertyValueChanged(pwstrDeviceId: PWideChar;
-
       const key: PROPERTYKEY): HRESULT; stdcall;
   end;
 
