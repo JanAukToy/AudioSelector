@@ -15,15 +15,14 @@ uses
   Winapi.Windows,
   Winapi.ActiveX,
 
-  JAT.MMDeviceAPI, JAT.EndpointVolume, JAT.AudioClient, cls_AudioDevice, cls_NotificationClient;
+  JAT.MMDeviceAPI, JAT.EndpointVolume, JAT.AudioClient, cls_AudioDevice,
+  cls_NotificationClient;
 
 type
   TAudioDeviceList = class(TObjectList<TAudioDevice>)
   private
     f_DeviceEnumerator: IMMDeviceEnumerator;
     f_DeviceCollection: IMMDeviceCollection;
-
-    f_NotificationClient: TNotificationClient;
   public
     constructor Create(const a_CoInitializeExFlag
       : ShortInt = COINIT_APARTMENTTHREADED);
@@ -47,15 +46,9 @@ constructor TAudioDeviceList.Create(const a_CoInitializeExFlag
 begin
   inherited Create; // Create Self Object List
 
-  // Create Notification Client Instance
-  f_NotificationClient := TNotificationClient.Create;
-
   // Get COM ClassÅ@https://learn.microsoft.com/ja-jp/windows/win32/coreaudio/enumerating-audio-devices
-  // and Register Notification Client
   if Succeeded(CoCreateInstance(CLSID_IMMDeviceEnumerator, nil,
-    CLSCTX_INPROC_SERVER, IID_IMMDeviceEnumerator, f_DeviceEnumerator)) and
-    Succeeded(f_DeviceEnumerator.RegisterEndpointNotificationCallback
-    (f_NotificationClient)) then
+    CLSCTX_INPROC_SERVER, IID_IMMDeviceEnumerator, f_DeviceEnumerator)) then
   begin
     // Get Audio Device Collection
     Reload;

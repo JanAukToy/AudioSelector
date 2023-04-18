@@ -15,8 +15,29 @@ uses
   JAT.MMDeviceAPI, JAT.EndpointVolume;
 
 type
+  // Changed Valud Event
+  TOnControlChangeNotify = procedure(const a_Data
+    : AUDIO_VOLUME_NOTIFICATION_DATA) of object;
+
+  // Audio Endpoint Volume Callbak Handler
+  TAudioEndpointVolumeCallback = class(TInterfacedObject,
+    IAudioEndpointVolumeCallback)
+  private
+    f_OnControlChangeNotify: TOnControlChangeNotify;
+  public
+    constructor Create(const a_OnControlChangeNotify: TOnControlChangeNotify);
+    destructor Destroy; override;
+    function OnNotify(pNotify: AUDIO_VOLUME_NOTIFICATION_DATA)
+      : HRESULT; stdcall;
+  end;
+
+  // Audio Device Class
   TAudioDevice = class
   private
+    f_CompleteInitialize: Boolean;
+
+    f_AudioEndpointVolumeCallback: TAudioEndpointVolumeCallback;
+
     f_Device: IMMDevice;
     f_AudioEndpointVolume: IAudioEndpointVolume;
     f_InterfaceFriendlyName: string;
@@ -25,19 +46,73 @@ type
     f_InstanceId: string;
     f_ContainerId: TGUID;
 
-    procedure GetProps(const a_PropertyStore: IPropertyStore);
+    f_ChannelCount: Cardinal;
+    f_MasterLevel: Single;
+    f_ChannelLevelArr: array of Single;
+    f_Mute: Boolean;
+    f_Step: Cardinal;
+    f_StepCount: Cardinal;
+    f_Min: Single;
+    f_Max: Single;
+    f_Spin: Single;
+
+    function GetChannelLevel(const a_Index: Cardinal): Single;
+    function GetDeviceProps(const a_PropertyStore: IPropertyStore): Boolean;
+    function GetAudioEndpointVolumeProps(): Boolean;
+    procedure OnControlChangeNotify(const a_Data
+      : AUDIO_VOLUME_NOTIFICATION_DATA);
   public
     constructor Create(const a_Device: IMMDevice);
     destructor Destroy; override;
 
+    property CompleteInitialize: Boolean read f_CompleteInitialize;
     property InterfaceFriendlyName: string read f_InterfaceFriendlyName;
     property DeviceDesc: string read f_DeviceDesc;
     property FriendlyName: string read f_FriendlyName;
     property InstanceId: string read f_InstanceId;
     property ContainerId: TGUID read f_ContainerId;
+
+    property ChannelCount: Cardinal read f_ChannelCount;
+    property MasterLevel: Single read f_MasterLevel;
+    property ChannelLevel[const a_Index: Cardinal]: Single read GetChannelLevel;
+    property Mute: Boolean read f_Mute;
+    property Step: Cardinal read f_Step;
+    property StepCount: Cardinal read f_StepCount;
+    property Min: Single read f_Min;
+    property l_Max: Single read f_Max;
+    property l_Spin: Single read f_Spin;
   end;
 
 implementation
+
+{ TIAudioEndpointVolumeCallback }
+
+// *****************************************************************************
+// Constructor
+constructor TAudioEndpointVolumeCallback.Create(const a_OnControlChangeNotify
+  : TOnControlChangeNotify);
+begin
+  inherited Create;
+
+  f_OnControlChangeNotify := a_OnControlChangeNotify;
+end;
+
+// *****************************************************************************
+// Destructor
+destructor TAudioEndpointVolumeCallback.Destroy;
+begin
+  inherited;
+end;
+
+// *****************************************************************************
+// Callback
+function TAudioEndpointVolumeCallback.OnNotify
+  (pNotify: AUDIO_VOLUME_NOTIFICATION_DATA): HRESULT;
+begin
+  f_OnControlChangeNotify(pNotify);
+
+  Result := S_OK;
+end;
 
 { TAudioDevice }
 
@@ -49,6 +124,9 @@ var
   l_PropertyStore: IPropertyStore;
   l_PointAudioEndpointVolume: Pointer;
 begin
+  // Init Variable
+  f_CompleteInitialize := False;
+
   // Store Device
   f_Device := a_Device;
 
@@ -61,16 +139,30 @@ begin
     // Get Open Property Interface
     if Succeeded(a_Device.OpenPropertyStore(STGM_READ, l_PropertyStore)) then
     begin
-      // Get Properties
-      GetProps(l_PropertyStore);
-    end;
+      // Get Device Properties
+      if GetDeviceProps(l_PropertyStore) then
+      begin
+        // Get Audio Endpoint Volume Pointer Interface
+        if Succeeded(a_Device.Activate(IID_IAudioEndpointVolume,
+          CLSCTX_INPROC_SERVER, nil, l_PointAudioEndpointVolume)) then
+        begin
+          // Cast to Audio Endpoint Volume
+          f_AudioEndpointVolume := IAudioEndpointVolume
+            (l_PointAudioEndpointVolume) as IAudioEndpointVolume;
 
-    // Get Audio Endpoint Volume
-    if Succeeded(a_Device.Activate(IID_IAudioEndpointVolume,
-      CLSCTX_INPROC_SERVER, nil, l_PointAudioEndpointVolume)) then
-    begin
-      f_AudioEndpointVolume := IAudioEndpointVolume(l_PointAudioEndpointVolume)
-        as IAudioEndpointVolume;
+          // Create Callback Class
+          f_AudioEndpointVolumeCallback := TAudioEndpointVolumeCallback.Create
+            (OnControlChangeNotify);
+
+          // Register Changed Value Callback
+          if Succeeded(f_AudioEndpointVolume.RegisterControlChangeNotify
+            (f_AudioEndpointVolumeCallback)) then
+          begin
+            // Get Audio Endpoint Volume Properties
+            f_CompleteInitialize := GetAudioEndpointVolumeProps;
+          end;
+        end;
+      end;
     end;
   end;
 end;
@@ -79,46 +171,140 @@ end;
 // Destructor
 destructor TAudioDevice.Destroy;
 begin
+  if Assigned(f_AudioEndpointVolumeCallback) then
+  begin
+    // Unregister Callback
+    f_AudioEndpointVolume.UnregisterControlChangeNotify
+      (f_AudioEndpointVolumeCallback);
+
+    // Auto Destroying by the Above.
+  end;
+
+  // Destroying Channel Level Array
+  FillChar(f_ChannelLevelArr, 0, 0);
+
   inherited;
 end;
 
 // *****************************************************************************
-// Get Properties
-procedure TAudioDevice.GetProps(const a_PropertyStore: IPropertyStore);
-var
-  l_PropValue: TPropVariant;
+// Get Channel Level
+function TAudioDevice.GetChannelLevel(const a_Index: Cardinal): Single;
 begin
-  if Succeeded(a_PropertyStore.GetValue(PKEY_DeviceInterface_FriendlyName,
-    l_PropValue)) then
+  if a_Index < Length(f_ChannelLevelArr) then
   begin
-    f_InterfaceFriendlyName := l_PropValue.pwszVal;
-  end;
-
-  ZeroMemory(@l_PropValue, SizeOf(l_PropValue));
-
-  if Succeeded(a_PropertyStore.GetValue(PKEY_Device_DeviceDesc, l_PropValue))
-  then
+    Result := f_ChannelLevelArr[a_Index];
+  end
+  else
   begin
-    f_DeviceDesc := l_PropValue.pwszVal;
+    Result := 0;
   end;
+end;
 
-  ZeroMemory(@l_PropValue, SizeOf(l_PropValue));
+// *****************************************************************************
+// Get Device Properties
+function TAudioDevice.GetDeviceProps(const a_PropertyStore
+  : IPropertyStore): Boolean;
+var
+  l_PropInterfaceFriendlyName: TPropVariant;
+  l_PropDeviceDesc: TPropVariant;
+  l_PropFriendlyName: TPropVariant;
+  l_PropContainerId: TPropVariant;
+begin
+  Result := False;
 
-  if Succeeded(a_PropertyStore.GetValue(PKEY_Device_FriendlyName, l_PropValue))
-  then
-  begin
-    f_FriendlyName := l_PropValue.pwszVal;
-  end;
-
-  ZeroMemory(@l_PropValue, SizeOf(l_PropValue));
-
+  // Get All Properties
   // [ PKEY_Device_InstanceId ] is IMMDevice::GetId Value
+  if (Succeeded(a_PropertyStore.GetValue(PKEY_DeviceInterface_FriendlyName,
+    l_PropInterfaceFriendlyName))) and
+    (Succeeded(a_PropertyStore.GetValue(PKEY_Device_DeviceDesc,
+    l_PropDeviceDesc))) and
+    (Succeeded(a_PropertyStore.GetValue(PKEY_Device_FriendlyName,
+    l_PropFriendlyName))) and
+    (Succeeded(a_PropertyStore.GetValue(PKEY_Device_ContainerId,
+    l_PropContainerId))) then
+  begin
+    // Store Properties
+    f_InterfaceFriendlyName := l_PropInterfaceFriendlyName.pwszVal;
+    f_DeviceDesc := l_PropDeviceDesc.pwszVal;
+    f_FriendlyName := l_PropFriendlyName.pwszVal;
+    f_ContainerId := l_PropContainerId.puuid^;
 
-  if Succeeded(a_PropertyStore.GetValue(PKEY_Device_ContainerId, l_PropValue))
+    Result := True;
+  end;
+end;
+
+// *****************************************************************************
+// Get Auddio Endpoint Volume Properties
+function TAudioDevice.GetAudioEndpointVolumeProps: Boolean;
+var
+  ii: Cardinal;
+  l_ChannelCount: Cardinal;
+  l_MasterLevel: Single;
+  l_ChannelLevel: Single;
+  l_ChannelLevelArr: array of Single;
+  l_Mute: LongBool;
+  l_Step: Cardinal;
+  l_StepCount: Cardinal;
+  l_Min: Single;
+  l_Max: Single;
+  l_Spin: Single;
+begin
+  Result := False;
+
+  // Clear Channnel Level Array
+  FillChar(l_ChannelLevelArr, 0, 0);
+
+  // Get All Properties
+  if (Succeeded(f_AudioEndpointVolume.GetChannelCount(l_ChannelCount))) and
+    (Succeeded(f_AudioEndpointVolume.GetMasterVolumeLevelScalar(l_MasterLevel)))
+    and (Succeeded(f_AudioEndpointVolume.GetMute(l_Mute))) and
+    (Succeeded(f_AudioEndpointVolume.GetVolumeStepInfo(l_Step, l_StepCount)))
+    and (Succeeded(f_AudioEndpointVolume.GetVolumeRange(l_Min, l_Max, l_Spin)))
   then
   begin
-    f_ContainerId := l_PropValue.puuid^;
+    // Get All Channel Volume
+    for ii := 0 to l_ChannelCount - 1 do
+    begin
+      if (Succeeded(f_AudioEndpointVolume.GetChannelVolumeLevelScalar(ii,
+        l_ChannelLevel))) then
+      begin
+        // Add Value
+        SetLength(l_ChannelLevelArr, Length(l_ChannelLevelArr) + 1);
+        l_ChannelLevelArr[Length(l_ChannelLevelArr) - 1] := l_ChannelLevel;
+      end;
+    end;
+
+    // Check Get All Channel Result
+    if l_ChannelCount = Length(l_ChannelLevelArr) then
+    begin
+      // Clear Channnel Level Array
+      FillChar(f_ChannelLevelArr, 0, 0);
+
+      // Store Properties
+      f_ChannelCount := l_ChannelCount;
+      f_MasterLevel := l_MasterLevel;
+      Move(l_ChannelLevelArr, f_ChannelLevelArr, Length(l_ChannelLevelArr));
+      f_Mute := l_Mute;
+      f_Step := l_Step;
+      f_StepCount := l_StepCount;
+      f_Min := l_Min;
+      f_Max := l_Max;
+      f_Spin := l_Spin;
+
+      Result := True;
+    end;
   end;
+end;
+
+// *****************************************************************************
+// Changed Value Notify Event
+procedure TAudioDevice.OnControlChangeNotify(const a_Data
+  : AUDIO_VOLUME_NOTIFICATION_DATA);
+var
+  l_Data: AUDIO_VOLUME_NOTIFICATION_DATA;
+begin;
+  l_Data := a_Data;
+
 end;
 
 end.
