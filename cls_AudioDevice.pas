@@ -7,11 +7,9 @@ unit cls_AudioDevice;
 interface
 
 uses
-  System.SysUtils,
-  System.Classes,
-  Winapi.Windows,
-  Winapi.ActiveX,
-  Winapi.PropSys,
+  System.SysUtils, System.Classes, System.Generics.Collections,
+  Winapi.Windows, Winapi.ActiveX, Winapi.PropSys,
+
   JAT.MMDeviceAPI, JAT.EndpointVolume;
 
 type
@@ -34,7 +32,7 @@ type
   // Audio Device Class
   TAudioDevice = class
   private
-    f_CompleteInitialize: Boolean;
+    f_Initialized: Boolean;
 
     f_AudioEndpointVolumeCallback: TAudioEndpointVolumeCallback;
 
@@ -48,7 +46,7 @@ type
 
     f_ChannelCount: Cardinal;
     f_MasterLevel: Single;
-    f_ChannelLevelArr: array of Single;
+    f_ChannelLevelList: TList<Single>;
     f_Mute: Boolean;
     f_Step: Cardinal;
     f_StepCount: Cardinal;
@@ -65,7 +63,8 @@ type
     constructor Create(const a_Device: IMMDevice);
     destructor Destroy; override;
 
-    property CompleteInitialize: Boolean read f_CompleteInitialize;
+    property Initialized: Boolean read f_Initialized;
+
     property InterfaceFriendlyName: string read f_InterfaceFriendlyName;
     property DeviceDesc: string read f_DeviceDesc;
     property FriendlyName: string read f_FriendlyName;
@@ -79,8 +78,8 @@ type
     property Step: Cardinal read f_Step;
     property StepCount: Cardinal read f_StepCount;
     property Min: Single read f_Min;
-    property l_Max: Single read f_Max;
-    property l_Spin: Single read f_Spin;
+    property Max: Single read f_Max;
+    property Spin: Single read f_Spin;
   end;
 
 implementation
@@ -125,10 +124,13 @@ var
   l_PointAudioEndpointVolume: Pointer;
 begin
   // Init Variable
-  f_CompleteInitialize := False;
+  f_Initialized := False;
 
   // Store Device
   f_Device := a_Device;
+
+  // Create Channel Level List
+  f_ChannelLevelList := TList<Single>.Create;
 
   // Get Device ID
   if Succeeded(a_Device.GetId(l_Id)) then
@@ -159,7 +161,7 @@ begin
             (f_AudioEndpointVolumeCallback)) then
           begin
             // Get Audio Endpoint Volume Properties
-            f_CompleteInitialize := GetAudioEndpointVolumeProps;
+            f_Initialized := GetAudioEndpointVolumeProps;
           end;
         end;
       end;
@@ -180,8 +182,8 @@ begin
     // Auto Destroying by the Above.
   end;
 
-  // Destroying Channel Level Array
-  FillChar(f_ChannelLevelArr, 0, 0);
+  // Destroy Channel Level List
+  FreeAndNil(f_ChannelLevelList);
 
   inherited;
 end;
@@ -190,9 +192,9 @@ end;
 // Get Channel Level
 function TAudioDevice.GetChannelLevel(const a_Index: Cardinal): Single;
 begin
-  if a_Index < Length(f_ChannelLevelArr) then
+  if a_Index < Cardinal(f_ChannelLevelList.Count) then
   begin
-    Result := f_ChannelLevelArr[a_Index];
+    Result := f_ChannelLevelList[a_Index];
   end
   else
   begin
@@ -241,7 +243,7 @@ var
   l_ChannelCount: Cardinal;
   l_MasterLevel: Single;
   l_ChannelLevel: Single;
-  l_ChannelLevelArr: array of Single;
+  l_ChannelLevelList: TList<Single>;
   l_Mute: LongBool;
   l_Step: Cardinal;
   l_StepCount: Cardinal;
@@ -251,9 +253,6 @@ var
 begin
   Result := False;
 
-  // Clear Channnel Level Array
-  FillChar(l_ChannelLevelArr, 0, 0);
-
   // Get All Properties
   if (Succeeded(f_AudioEndpointVolume.GetChannelCount(l_ChannelCount))) and
     (Succeeded(f_AudioEndpointVolume.GetMasterVolumeLevelScalar(l_MasterLevel)))
@@ -262,36 +261,42 @@ begin
     and (Succeeded(f_AudioEndpointVolume.GetVolumeRange(l_Min, l_Max, l_Spin)))
   then
   begin
-    // Get All Channel Volume
-    for ii := 0 to l_ChannelCount - 1 do
-    begin
-      if (Succeeded(f_AudioEndpointVolume.GetChannelVolumeLevelScalar(ii,
-        l_ChannelLevel))) then
+    l_ChannelLevelList := TList<Single>.Create;
+
+    try
+      // Get All Channel Volume
+      for ii := 0 to l_ChannelCount - 1 do
       begin
-        // Add Value
-        SetLength(l_ChannelLevelArr, Length(l_ChannelLevelArr) + 1);
-        l_ChannelLevelArr[Length(l_ChannelLevelArr) - 1] := l_ChannelLevel;
+        if (Succeeded(f_AudioEndpointVolume.GetChannelVolumeLevelScalar(ii,
+          l_ChannelLevel))) then
+        begin
+          // Add Value
+          l_ChannelLevelList.Add(l_ChannelLevel);
+        end;
       end;
-    end;
 
-    // Check Get All Channel Result
-    if l_ChannelCount = Length(l_ChannelLevelArr) then
-    begin
-      // Clear Channnel Level Array
-      FillChar(f_ChannelLevelArr, 0, 0);
+      // Check Get All Channel Result
+      if l_ChannelCount = Cardinal(l_ChannelLevelList.Count) then
+      begin
+        // Clear Channnel Level List
+        f_ChannelLevelList.Clear;
 
-      // Store Properties
-      f_ChannelCount := l_ChannelCount;
-      f_MasterLevel := l_MasterLevel;
-      Move(l_ChannelLevelArr, f_ChannelLevelArr, Length(l_ChannelLevelArr));
-      f_Mute := l_Mute;
-      f_Step := l_Step;
-      f_StepCount := l_StepCount;
-      f_Min := l_Min;
-      f_Max := l_Max;
-      f_Spin := l_Spin;
+        // Store Properties
+        f_ChannelCount := l_ChannelCount;
+        f_MasterLevel := l_MasterLevel;
+        f_ChannelLevelList.AddRange(l_ChannelLevelList);
+        f_Mute := l_Mute;
+        f_Step := l_Step;
+        f_StepCount := l_StepCount;
+        f_Min := l_Min;
+        f_Max := l_Max;
+        f_Spin := l_Spin;
 
-      Result := True;
+        Result := True;
+      end;
+
+    finally
+      l_ChannelLevelList.Free;
     end;
   end;
 end;

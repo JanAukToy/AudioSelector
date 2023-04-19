@@ -8,9 +8,7 @@ interface
 
 uses
   System.SysUtils,
-  Winapi.Windows,
-  Winapi.ActiveX,
-
+  Winapi.Windows, Winapi.ActiveX,
   JAT.MMDeviceAPI;
 
 type

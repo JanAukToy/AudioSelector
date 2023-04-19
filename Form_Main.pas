@@ -7,21 +7,13 @@ unit Form_Main;
 interface
 
 uses
-  Winapi.Windows,
-  Winapi.Messages,
-  System.SysUtils,
-  System.Variants,
-  System.Classes,
-  Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.ExtCtrls,
-
-  cls_AudioDeviceList, System.ImageList, Vcl.ImgList, Vcl.Menus;
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.ComCtrls, Vcl.Controls,
+  
+  cls_AudioDeviceList;
 
 type
   TFormMain = class(TForm)
-    pnl_Client: TPanel;
+    pgctrl_Device: TPageControl;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -37,16 +29,27 @@ var
 implementation
 
 uses
-  cls_AudioDevice;
+  cls_AudioDevice, cmp_DevicePage;
 
 {$R *.dfm}
 
 // *****************************************************************************
 // Constructor
 procedure TFormMain.FormCreate(Sender: TObject);
+var
+  ii: Integer;
+  l_DevicePage: TDevicePage;
 begin
   // Create Audio Device List
   f_AudioDeviceList := TAudioDeviceList.Create;
+
+  // Create Device Pages
+  for ii := 0 to f_AudioDeviceList.Count - 1 do
+  begin
+    l_DevicePage := TDevicePage.Create(Self);
+    l_DevicePage.Caption := f_AudioDeviceList[ii].FriendlyName;
+    l_DevicePage.PageControl := pgctrl_Device;
+  end;
 end;
 
 // *****************************************************************************

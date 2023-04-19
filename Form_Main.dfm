@@ -2,27 +2,29 @@ object FormMain: TFormMain
   Left = 0
   Top = 0
   Caption = 'JAT Audio Device Selector'
-  ClientHeight = 478
-  ClientWidth = 546
+  ClientHeight = 461
+  ClientWidth = 734
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Height = -12
+  Font.Name = 'Meiryo UI'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
-  TextHeight = 13
-  object pnl_Client: TPanel
+  TextHeight = 15
+  object pgctrl_Device: TPageControl
     Left = 0
     Top = 0
-    Width = 546
-    Height = 478
+    Width = 734
+    Height = 461
     Align = alClient
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitWidth = 284
-    ExplicitHeight = 261
+    ExplicitHeight = 478
   end
 end

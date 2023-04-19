@@ -7,13 +7,8 @@ unit cls_AudioDeviceList;
 interface
 
 uses
-  System.SysUtils,
-  System.Classes,
-  System.Win.ComObj,
-  System.SyncObjs,
-  System.Generics.Collections,
-  Winapi.Windows,
-  Winapi.ActiveX,
+  System.SysUtils, System.Classes, System.Win.ComObj, System.SyncObjs,
+  System.Generics.Collections, Winapi.Windows, Winapi.ActiveX,
 
   JAT.MMDeviceAPI, JAT.EndpointVolume, JAT.AudioClient, cls_AudioDevice,
   cls_NotificationClient;
@@ -44,7 +39,7 @@ uses
 constructor TAudioDeviceList.Create(const a_CoInitializeExFlag
   : ShortInt = COINIT_APARTMENTTHREADED);
 begin
-  inherited Create; // Create Self Object List
+  inherited Create(True); // Create Self Object List
 
   // Get COM ClassÅ@https://learn.microsoft.com/ja-jp/windows/win32/coreaudio/enumerating-audio-devices
   if Succeeded(CoCreateInstance(CLSID_IMMDeviceEnumerator, nil,

@@ -1,0 +1,54 @@
+// *****************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+// *****************************************************************************
+unit Form_Main;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+
+  cls_AudioDeviceList, System.ImageList, Vcl.ImgList, Vcl.Menus;
+
+type
+  TFormMain = class(TForm)
+    pnl_Client: TPanel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+  private
+    { Private êÈåæ }
+    f_AudioDeviceList: TAudioDeviceList;
+  public
+    { Public êÈåæ }
+  end;
+
+var
+  FormMain: TFormMain;
+
+implementation
+
+uses
+  cls_AudioDevice;
+
+{$R *.dfm}
+
+// *****************************************************************************
+// Constructor
+procedure TFormMain.FormCreate(Sender: TObject);
+begin
+  // Create Audio Device List
+  f_AudioDeviceList := TAudioDeviceList.Create;
+end;
+
+// *****************************************************************************
+// Destructor
+procedure TFormMain.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(f_AudioDeviceList);
+end;
+
+end.
