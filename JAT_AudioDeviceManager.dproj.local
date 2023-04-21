@@ -2,8 +2,8 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2023/04/11 23:17:40.000.797,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2023/04/11 23:17:44.000.028,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Unit1.pas</Transaction>
     <Transaction>2023/04/11 23:17:44.000.028,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\Unit1.dfm=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Unit1.dfm</Transaction>
+    <Transaction>2023/04/11 23:17:44.000.028,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Unit1.pas</Transaction>
     <Transaction>2023/04/11 23:17:47.000.287,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Project1.dproj</Transaction>
     <Transaction>2023/04/11 23:35:50.000.110,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Unit1.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Form_Main.pas</Transaction>
     <Transaction>2023/04/11 23:35:50.000.110,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Unit1.dfm=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\sample1\Form_Main.dfm</Transaction>
@@ -45,8 +45,10 @@
     <Transaction>2023/04/15 00:27:44.000.629,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\JAT.PolicyConfig.pas=</Transaction>
     <Transaction>2023/04/17 23:36:56.000.718,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
     <Transaction>2023/04/17 23:37:27.000.190,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\cls_NotificationClient.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
-    <Transaction>2023/04/20 00:09:07.840,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
-    <Transaction>2023/04/20 00:09:19.566,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\cmp_DevicePage.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
+    <Transaction>2023/04/20 00:09:07.000.840,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
+    <Transaction>2023/04/20 00:09:19.000.566,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\cmp_DevicePage.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
+    <Transaction>2023/04/21 19:55:06.000.062,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
+    <Transaction>2023/04/21 19:55:10.000.201,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\MyTypes.pas</Transaction>
   </Transactions>
 	<ProjectSortOrder AutoSort="0" SortType="0">
     <File Path="cls_AudioDevice.pas"/>
