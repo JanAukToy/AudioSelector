@@ -10,7 +10,7 @@ uses
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.ComCtrls, Vcl.Controls,
   Vcl.ToolWin, Vcl.Menus, System.Generics.Collections,
 
-  cls_AudioDeviceList, cmp_DevicePage;
+  cls_AudioDeviceList, cmp_DevicePage, Vcl.StdCtrls;
 
 type
   TFormMain = class(TForm)
@@ -20,6 +20,7 @@ type
     mi_LanguageSettings: TMenuItem;
     mi_Lang_English: TMenuItem;
     mi_Lang_Japanese: TMenuItem;
+    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure mi_Lang_EnglishClick(Sender: TObject);

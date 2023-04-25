@@ -19,6 +19,13 @@ object FormMain: TFormMain
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 15
+  object Label1: TLabel
+    Left = 360
+    Top = 256
+    Width = 38
+    Height = 15
+    Caption = 'Label1'
+  end
   object pgctrl_Device: TPageControl
     Left = 0
     Top = 0
@@ -28,13 +35,10 @@ object FormMain: TFormMain
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 20
-    ExplicitHeight = 441
   end
   object MainMenu1: TMainMenu
-    Left = 360
-    Top = 240
+    Left = 16
+    Top = 24
     object mi_Settings: TMenuItem
       Caption = 'Settings'
       object mi_LanguageSettings: TMenuItem
