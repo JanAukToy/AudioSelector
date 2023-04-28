@@ -8,19 +8,19 @@ interface
 
 uses
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.ComCtrls, Vcl.Controls,
-  Vcl.ToolWin, Vcl.Menus, System.Generics.Collections,
+  Vcl.ToolWin, Vcl.Menus, System.Generics.Collections, Vcl.StdCtrls,
 
-  cls_AudioDeviceList, cmp_DevicePage, Vcl.StdCtrls;
+  cls_AudioDeviceList, cmp_DevicePage, cmp_PropertiesBox;
 
 type
   TFormMain = class(TForm)
-    pgctrl_Device: TPageControl;
     MainMenu1: TMainMenu;
     mi_Settings: TMenuItem;
     mi_LanguageSettings: TMenuItem;
     mi_Lang_English: TMenuItem;
     mi_Lang_Japanese: TMenuItem;
     Label1: TLabel;
+    pgctrl_Device: TPageControl;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure mi_Lang_EnglishClick(Sender: TObject);

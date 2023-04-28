@@ -136,6 +136,8 @@
         <DCCReference Include="cls_AudioDevice.pas"/>
         <DCCReference Include="cls_NotificationClient.pas"/>
         <DCCReference Include="cmp_DevicePage.pas"/>
+        <DCCReference Include="cmp_PropertiesBox.pas"/>
+        <DCCReference Include="cmp_PropertyPanel.pas"/>
         <None Include="README.md"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

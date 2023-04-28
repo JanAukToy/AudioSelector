@@ -1,0 +1,133 @@
+﻿unit cmp_PropertyPanel;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Vcl.Controls, Vcl.StdCtrls, Vcl.ComCtrls,
+  Vcl.ExtCtrls;
+
+type
+  // Property Panel Type
+  TPropertyPanelType = (ptText, ptCheckBox, ptSpin);
+
+  // ---------------------------------------------------------------------------
+  // Property Panel
+  TPropertyPanel = class(TPanel)
+  private
+    f_Label: TLabel;
+    f_Edit: TEdit;
+
+    function GetPropertyLabel(): string;
+    function GetPropertyValue(): string;
+    procedure SetPropertyLabel(const a_Value: string);
+    procedure SetPropertyValue(const a_Value: string);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure AddTextProperty(const a_Label: string; const a_Value: string);
+    procedure CreateCheckBoxProperty(const a_Label: string;
+      const a_Value: Single);
+    procedure CreateSpinProperty(const a_Label: string; const a_Value: Boolean);
+
+    property PropertyLabel: string read GetPropertyLabel write SetPropertyLabel;
+    property PropertyValue: string read GetPropertyValue write SetPropertyValue;
+  end;
+
+implementation
+
+// *****************************************************************************
+// Constructor
+constructor TPropertyPanel.Create(AOwner: TComponent; const a_Label: string;
+  const a_Value: string; const a_PropertyPanelType: TPropertyPanelType);
+begin
+  inherited Create(AOwner);
+
+  // Self Settings
+  Self.Caption := '';
+  Self.Align := alTop;
+  Self.AlignWithMargins := True;
+  Self.Margins.SetBounds(5, 5, 5, 5);
+  Self.Padding.SetBounds(5, 0, 0, 0);
+  Self.Height := 25;
+
+  case a_PropertyPanelType of
+    ptText:
+      AddTextProperty();
+    ptCheckBox:
+      CreateCheckBoxProperty;
+    ptSpin:
+      CreateSpinProperty;
+  end;
+end;
+
+// *****************************************************************************
+// Destructor
+destructor TPropertyPanel.Destroy;
+begin
+  inherited;
+end;
+
+// *****************************************************************************
+// Text Property
+procedure TPropertyPanel.AddTextProperty;
+begin
+  // Create Child
+  f_Label := TLabel.Create(Self);
+  f_Edit := TEdit.Create(Self);
+
+  // Child Settings
+  f_Label.Align := alLeft;
+  f_Label.AutoSize := False;
+  f_Label.Width := 100;
+  f_Label.Layout := tlCenter;
+  f_Edit.Align := alClient;
+
+  // Set Values
+  f_Label.Caption := a_Label;
+  f_Edit.Text := a_Value;
+
+  // Set Parent
+  f_Label.Parent := Self;
+  f_Edit.Parent := Self;
+end;
+
+// *****************************************************************************
+// CheckBox Property
+procedure TPropertyPanel.CreateCheckBoxProperty;
+begin
+
+end;
+
+// *****************************************************************************
+// Spin Property
+procedure TPropertyPanel.CreateSpinProperty;
+begin
+
+end;
+
+// *****************************************************************************
+// Getter
+function TPropertyPanel.GetPropertyLabel: string;
+begin
+  Result := f_Label.Caption;
+end;
+
+function TPropertyPanel.GetPropertyValue: string;
+begin
+  Result := f_Edit.Text;
+end;
+
+// *****************************************************************************
+// Setter
+procedure TPropertyPanel.SetPropertyLabel(const a_Value: string);
+begin
+  f_Label.Caption := a_Value;
+end;
+
+procedure TPropertyPanel.SetPropertyValue(const a_Value: string);
+begin
+  f_Edit.Text := a_Value;
+end;
+
+end.

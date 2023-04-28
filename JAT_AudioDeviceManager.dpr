@@ -9,7 +9,9 @@ uses
   JAT.EndpointVolume in 'JAT.EndpointVolume.pas',
   cls_AudioDevice in 'cls_AudioDevice.pas',
   cls_NotificationClient in 'cls_NotificationClient.pas',
-  cmp_DevicePage in 'cmp_DevicePage.pas';
+  cmp_DevicePage in 'cmp_DevicePage.pas',
+  cmp_PropertiesBox in 'cmp_PropertiesBox.pas',
+  cmp_PropertyPanel in 'cmp_PropertyPanel.pas';
 
 {$R *.res}
 
