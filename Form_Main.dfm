@@ -1,9 +1,9 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  Caption = 'JAT Audio Device Selector'
+  Caption = 'JAT Audio Device Manager'
   ClientHeight = 461
-  ClientWidth = 734
+  ClientWidth = 784
   Color = clBtnFace
   Constraints.MinHeight = 500
   Constraints.MinWidth = 500
@@ -29,12 +29,13 @@ object FormMain: TFormMain
   object pgctrl_Device: TPageControl
     Left = 0
     Top = 0
-    Width = 734
+    Width = 784
     Height = 461
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
+    ExplicitWidth = 734
   end
   object MainMenu1: TMainMenu
     Left = 16

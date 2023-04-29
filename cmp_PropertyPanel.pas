@@ -1,3 +1,7 @@
+// *****************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+// *****************************************************************************
 unit cmp_PropertyPanel;
 
 interface
@@ -7,6 +11,11 @@ uses
   Vcl.ExtCtrls, Vcl.Samples.Spin;
 
 type
+  // Change Property Event
+  TOnChangeTextProperty = procedure(const a_Value: string) of object;
+  TOnChangeCheckBoxProperty = procedure(const a_Value: Boolean) of object;
+  TOnChangeSpinProperty = procedure(const a_Value: Integer) of object;
+
   // Property Panel
   TPropertyPanel = class(TPanel)
   private
@@ -15,23 +24,34 @@ type
     f_CheckBoxProperty: TCheckBox;
     f_SpinProperty: TSpinEdit;
 
+    f_OnChangeTextProperty: TOnChangeTextProperty;
+    f_OnChangeCheckBoxProperty: TOnChangeCheckBoxProperty;
+    f_OnChangeSpinProperty: TOnChangeSpinProperty;
+
     function GetPropertyLabel(): string;
-    function GetPropertyValue(): string;
     procedure SetPropertyLabel(const a_Value: string);
-    procedure SetPropertyValue(const a_Value: string);
+    procedure OnChangeTextProperty(Sender: TObject);
+    procedure OnClickCheckBoxProperty(Sender: TObject);
+    procedure OnChangeSpinProperty(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; const a_Label: string); reintroduce;
     destructor Destroy; override;
 
-    procedure SetTextProperty(const a_Value: string);
-    procedure SetCheckBoxProperty(const a_Value: Boolean);
-    procedure SetSpinProperty(const a_Value: Integer);
+    procedure SetTextProperty(const a_Value: string; const a_ReadOnly: Boolean;
+      const a_OnChangeTextProperty: TOnChangeTextProperty);
+    procedure SetCheckBoxProperty(const a_Value: Boolean;
+      const a_ReadOnly: Boolean; const a_OnChangeCheckBoxProperty
+      : TOnChangeCheckBoxProperty);
+    procedure SetSpinProperty(const a_Value: Integer; const a_ReadOnly: Boolean;
+      const a_OnChangeSpinProperty: TOnChangeSpinProperty);
 
     property PropertyLabel: string read GetPropertyLabel write SetPropertyLabel;
-    property PropertyValue: string read GetPropertyValue write SetPropertyValue;
   end;
 
 implementation
+
+uses
+  Vcl.Graphics;
 
 // *****************************************************************************
 // Constructor
@@ -68,43 +88,103 @@ end;
 
 // *****************************************************************************
 // Text Property
-procedure TPropertyPanel.SetTextProperty(const a_Value: string);
+procedure TPropertyPanel.SetTextProperty(const a_Value: string;
+  const a_ReadOnly: Boolean; const a_OnChangeTextProperty
+  : TOnChangeTextProperty);
 begin
+  if Assigned(f_TextProperty) then
+  begin
+    Exit;
+  end;
+
   // Create Text Property Value
   f_TextProperty := TEdit.Create(Self);
 
+  // Store Callback
+  f_OnChangeTextProperty := a_OnChangeTextProperty;
+
+  // Set Read Only Background Color
+  if a_ReadOnly then
+  begin
+    f_TextProperty.Color := clBtnFace;
+  end;
+
   // Text Settings
+  f_TextProperty.ReadOnly := a_ReadOnly;
   f_TextProperty.Align := alClient;
   f_TextProperty.Text := a_Value;
   f_TextProperty.Parent := Self;
+
+  // Register Change Event
+  f_TextProperty.OnChange := OnChangeTextProperty;
 end;
 
 // *****************************************************************************
 // CheckBox Property
-procedure TPropertyPanel.SetCheckBoxProperty(const a_Value: Boolean);
+procedure TPropertyPanel.SetCheckBoxProperty(const a_Value: Boolean;
+  const a_ReadOnly: Boolean; const a_OnChangeCheckBoxProperty
+  : TOnChangeCheckBoxProperty);
 begin
+  if Assigned(f_CheckBoxProperty) then
+  begin
+    Exit;
+  end;
+
   // Create CheckBox Property Value
   f_CheckBoxProperty := TCheckBox.Create(Self);
 
+  // Store Callback
+  f_OnChangeCheckBoxProperty := a_OnChangeCheckBoxProperty;
+
+  // Set Read Only Background Color
+  if a_ReadOnly then
+  begin
+    f_CheckBoxProperty.Color := clBtnFace;
+  end;
+
   // CheckBox Settings
+  f_CheckBoxProperty.Enabled := not a_ReadOnly;
   f_CheckBoxProperty.Align := alClient;
   f_CheckBoxProperty.Checked := a_Value;
   f_CheckBoxProperty.Caption := '';
   f_CheckBoxProperty.Cursor := crHandPoint;
   f_CheckBoxProperty.Parent := Self;
+
+  // Register Change Event
+  f_CheckBoxProperty.OnClick := OnClickCheckBoxProperty;
 end;
 
 // *****************************************************************************
 // Spin Property
-procedure TPropertyPanel.SetSpinProperty(const a_Value: Integer);
+procedure TPropertyPanel.SetSpinProperty(const a_Value: Integer;
+  const a_ReadOnly: Boolean; const a_OnChangeSpinProperty
+  : TOnChangeSpinProperty);
 begin
+  if Assigned(f_SpinProperty) then
+  begin
+    Exit;
+  end;
+
   // Create Spin Property Value
   f_SpinProperty := TSpinEdit.Create(Self);
 
+  // Store Callback
+  f_OnChangeSpinProperty := a_OnChangeSpinProperty;
+
+  // Set Read Only Background Color
+  if a_ReadOnly then
+  begin
+    f_SpinProperty.Color := clBtnFace;
+  end;
+  
   // Spin Settings
+  f_SpinProperty.ReadOnly := a_ReadOnly;
   f_SpinProperty.Align := alClient;
   f_SpinProperty.Value := a_Value;
   f_SpinProperty.Parent := Self;
+
+  // Register Change Event
+  f_SpinProperty.OnChange := OnChangeSpinProperty;
 end;
 
 // *****************************************************************************
@@ -115,13 +195,6 @@ begin
 end;
 
 // *****************************************************************************
-// Value Getter
-function TPropertyPanel.GetPropertyValue: string;
-begin
-  Result := f_TextProperty.Text;
-end;
-
-// *****************************************************************************
 // Label Setter
 procedure TPropertyPanel.SetPropertyLabel(const a_Value: string);
 begin
@@ -129,10 +202,33 @@ begin
 end;
 
 // *****************************************************************************
-// Value Setter
-procedure TPropertyPanel.SetPropertyValue(const a_Value: string);
+// Change Event - Text Property
+procedure TPropertyPanel.OnChangeTextProperty(Sender: TObject);
 begin
-  f_TextProperty.Text := a_Value;
+  if Assigned(f_OnChangeTextProperty) then
+  begin
+    f_OnChangeTextProperty(TEdit(Sender).Text);
+  end;
+end;
+
+// *****************************************************************************
+// Change Event - CheckBox Property
+procedure TPropertyPanel.OnClickCheckBoxProperty(Sender: TObject);
+begin
+  if Assigned(f_OnChangeCheckBoxProperty) then
+  begin
+    f_OnChangeCheckBoxProperty(TCheckBox(Sender).Checked);
+  end;
+end;
+
+// *****************************************************************************
+// Change Event - Spin Property
+procedure TPropertyPanel.OnChangeSpinProperty(Sender: TObject);
+begin
+  if Assigned(f_OnChangeSpinProperty) then
+  begin
+    f_OnChangeSpinProperty(TSpinEdit(Sender).Value);
+  end;
 end;
 
 end.

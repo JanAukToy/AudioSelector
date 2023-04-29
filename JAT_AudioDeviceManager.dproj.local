@@ -49,10 +49,10 @@
     <Transaction>2023/04/20 00:09:19.000.566,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\cmp_DevicePage.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
     <Transaction>2023/04/21 19:55:06.000.062,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
     <Transaction>2023/04/21 19:55:10.000.201,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\MyTypes.pas</Transaction>
-    <Transaction>2023/04/28 23:32:05.742,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
-    <Transaction>2023/04/28 23:32:15.593,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\cmp_PropertiesBox.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
-    <Transaction>2023/04/28 23:34:26.987,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
-    <Transaction>2023/04/28 23:34:34.490,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\cmp_PropertyPanel.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
+    <Transaction>2023/04/28 23:32:05.000.742,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
+    <Transaction>2023/04/28 23:32:15.000.593,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\cmp_PropertiesBox.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
+    <Transaction>2023/04/28 23:34:26.000.987,=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
+    <Transaction>2023/04/28 23:34:34.000.490,C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\cmp_PropertyPanel.pas=C:\Users\Kato Junya.DESKTOP-PU91LGG\OneDrive\ドキュメント\Embarcadero\Studio\Projects\JAT_AudioDeviceManager\Unit1.pas</Transaction>
   </Transactions>
 	<ProjectSortOrder AutoSort="0" SortType="0">
     <File Path="cls_AudioDevice.pas"/>

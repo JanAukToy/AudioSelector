@@ -35,6 +35,7 @@ type
     f_Initialized: Boolean;
 
     f_AudioEndpointVolumeCallback: TAudioEndpointVolumeCallback;
+    f_PropertyStore: IPropertyStore;
 
     f_Device: IMMDevice;
     f_AudioEndpointVolume: IAudioEndpointVolume;
@@ -55,6 +56,12 @@ type
     f_Spin: Single;
 
     function GetChannelLevel(const a_Index: Cardinal): Single;
+
+    procedure SetDeviceDesc(const a_Value: string);
+
+    procedure SetMasterLevel(const a_Value: Single);
+    procedure SetMute(const a_Value: Boolean);
+
     function GetDeviceProps(const a_PropertyStore: IPropertyStore): Boolean;
     function GetAudioEndpointVolumeProps(): Boolean;
     procedure OnControlChangeNotify(const a_Data
@@ -66,15 +73,15 @@ type
     property Initialized: Boolean read f_Initialized;
 
     property InterfaceFriendlyName: string read f_InterfaceFriendlyName;
-    property DeviceDesc: string read f_DeviceDesc;
+    property DeviceDesc: string read f_DeviceDesc write SetDeviceDesc;
     property FriendlyName: string read f_FriendlyName;
     property InstanceId: string read f_InstanceId;
     property ContainerId: TGUID read f_ContainerId;
 
     property ChannelCount: Cardinal read f_ChannelCount;
-    property MasterLevel: Single read f_MasterLevel;
+    property MasterLevel: Single read f_MasterLevel write SetMasterLevel;
     property ChannelLevel[const a_Index: Cardinal]: Single read GetChannelLevel;
-    property Mute: Boolean read f_Mute;
+    property Mute: Boolean read f_Mute write SetMute;
     property Step: Cardinal read f_Step;
     property StepCount: Cardinal read f_StepCount;
     property Min: Single read f_Min;
@@ -120,7 +127,6 @@ end;
 constructor TAudioDevice.Create(const a_Device: IMMDevice);
 var
   l_Id: PWideChar;
-  l_PropertyStore: IPropertyStore;
   l_PointAudioEndpointVolume: Pointer;
 begin
   // Init Variable
@@ -139,10 +145,11 @@ begin
     f_InstanceId := l_Id;
 
     // Get Open Property Interface
-    if Succeeded(a_Device.OpenPropertyStore(STGM_READ, l_PropertyStore)) then
+    if Succeeded(a_Device.OpenPropertyStore(STGM_READWRITE, f_PropertyStore))
+    then
     begin
       // Get Device Properties
-      if GetDeviceProps(l_PropertyStore) then
+      if GetDeviceProps(f_PropertyStore) then
       begin
         // Get Audio Endpoint Volume Pointer Interface
         if Succeeded(a_Device.Activate(IID_IAudioEndpointVolume,
@@ -200,6 +207,35 @@ begin
   begin
     Result := 0;
   end;
+end;
+
+// *****************************************************************************
+// Set DeviceDesc
+procedure TAudioDevice.SetDeviceDesc(const a_Value: string);
+var
+  l_Variant: TPropVariant;
+begin
+  // Cast to Prop Variant
+  if Succeeded(InitPropVariantFromString(PChar(a_Value), l_Variant)) and
+    Succeeded(f_PropertyStore.SetValue(PKEY_Device_DeviceDesc, l_Variant)) then
+  begin
+    // Commit Change..
+    Succeeded(f_PropertyStore.Commit);
+  end;
+end;
+
+// *****************************************************************************
+// Set MasterLevel
+procedure TAudioDevice.SetMasterLevel(const a_Value: Single);
+begin
+  f_AudioEndpointVolume.SetMasterVolumeLevelScalar(a_Value, GUID_NULL);
+end;
+
+// *****************************************************************************
+// Set Mute
+procedure TAudioDevice.SetMute(const a_Value: Boolean);
+begin
+  f_AudioEndpointVolume.SetMute(a_Value, GUID_NULL);
 end;
 
 // *****************************************************************************
