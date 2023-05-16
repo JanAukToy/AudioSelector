@@ -33,19 +33,33 @@ type
     procedure OnChangeTextProperty(Sender: TObject);
     procedure OnClickCheckBoxProperty(Sender: TObject);
     procedure OnChangeSpinProperty(Sender: TObject);
+    function GetCheckBoxPropertyValue: Boolean;
+    function GetSpinPropertyValue: Integer;
+    function GetTextPropertyValue: string;
+    procedure SetCheckBoxPropertyValue(const a_Value: Boolean);
+    procedure SetSpinPropertyValue(const a_Value: Integer);
+    procedure SetTextPropertyValue(const a_Value: string);
   public
     constructor Create(AOwner: TComponent; const a_Label: string); reintroduce;
     destructor Destroy; override;
 
-    procedure SetTextProperty(const a_Value: string; const a_ReadOnly: Boolean;
+    procedure CreateTextProperty(const a_Value: string;
+      const a_ReadOnly: Boolean;
       const a_OnChangeTextProperty: TOnChangeTextProperty);
-    procedure SetCheckBoxProperty(const a_Value: Boolean;
+    procedure CreateCheckBoxProperty(const a_Value: Boolean;
       const a_ReadOnly: Boolean; const a_OnChangeCheckBoxProperty
       : TOnChangeCheckBoxProperty);
-    procedure SetSpinProperty(const a_Value: Integer; const a_ReadOnly: Boolean;
+    procedure CreateSpinProperty(const a_Value: Integer;
+      const a_ReadOnly: Boolean;
       const a_OnChangeSpinProperty: TOnChangeSpinProperty);
 
     property PropertyLabel: string read GetPropertyLabel write SetPropertyLabel;
+    property TextPropertyValue: string read GetTextPropertyValue
+      write SetTextPropertyValue;
+    property CheckBoxPropertyValue: Boolean read GetCheckBoxPropertyValue
+      write SetCheckBoxPropertyValue;
+    property SpinPropertyValue: Integer read GetSpinPropertyValue
+      write SetSpinPropertyValue;
   end;
 
 implementation
@@ -63,6 +77,7 @@ begin
   Self.Caption := '';
   Self.Align := alTop;
   Self.AlignWithMargins := True;
+  Self.BevelOuter := bvLowered;
   Self.Margins.SetBounds(5, 5, 5, 5);
   Self.Padding.SetBounds(5, 0, 0, 0);
   Self.Height := 25;
@@ -73,7 +88,7 @@ begin
   // Label Settings
   f_Label.Align := alLeft;
   f_Label.AutoSize := False;
-  f_Label.Width := 100;
+  f_Label.Width := 150;
   f_Label.Layout := tlCenter;
   f_Label.Caption := a_Label;
   f_Label.Parent := Self;
@@ -88,7 +103,7 @@ end;
 
 // *****************************************************************************
 // Text Property
-procedure TPropertyPanel.SetTextProperty(const a_Value: string;
+procedure TPropertyPanel.CreateTextProperty(const a_Value: string;
   const a_ReadOnly: Boolean; const a_OnChangeTextProperty
   : TOnChangeTextProperty);
 begin
@@ -121,7 +136,7 @@ end;
 
 // *****************************************************************************
 // CheckBox Property
-procedure TPropertyPanel.SetCheckBoxProperty(const a_Value: Boolean;
+procedure TPropertyPanel.CreateCheckBoxProperty(const a_Value: Boolean;
   const a_ReadOnly: Boolean; const a_OnChangeCheckBoxProperty
   : TOnChangeCheckBoxProperty);
 begin
@@ -156,7 +171,7 @@ end;
 
 // *****************************************************************************
 // Spin Property
-procedure TPropertyPanel.SetSpinProperty(const a_Value: Integer;
+procedure TPropertyPanel.CreateSpinProperty(const a_Value: Integer;
   const a_ReadOnly: Boolean; const a_OnChangeSpinProperty
   : TOnChangeSpinProperty);
 begin
@@ -176,7 +191,7 @@ begin
   begin
     f_SpinProperty.Color := clBtnFace;
   end;
-  
+
   // Spin Settings
   f_SpinProperty.ReadOnly := a_ReadOnly;
   f_SpinProperty.Align := alClient;
@@ -199,6 +214,72 @@ end;
 procedure TPropertyPanel.SetPropertyLabel(const a_Value: string);
 begin
   f_Label.Caption := a_Value;
+end;
+
+// *****************************************************************************
+// Value Getter - Text Property
+function TPropertyPanel.GetTextPropertyValue: string;
+begin
+  Result := '';
+
+  if Assigned(f_TextProperty) then
+  begin
+    Result := f_TextProperty.Text;
+  end;
+end;
+
+// *****************************************************************************
+// Value Getter - CheckBox Property
+function TPropertyPanel.GetCheckBoxPropertyValue: Boolean;
+begin
+  Result := False;
+
+  if Assigned(f_CheckBoxProperty) then
+  begin
+    Result := f_CheckBoxProperty.Checked;
+  end;
+end;
+
+// *****************************************************************************
+// Value Getter - Spin Property
+function TPropertyPanel.GetSpinPropertyValue: Integer;
+begin
+  Result := -1;
+
+  if Assigned(f_SpinProperty) then
+  begin
+    Result := f_SpinProperty.Value;
+  end;
+end;
+
+// *****************************************************************************
+// Value Setter - Text Property
+procedure TPropertyPanel.SetTextPropertyValue(const a_Value: string);
+begin
+  if Assigned(f_TextProperty) then
+  begin
+    f_TextProperty.Text := a_Value;
+  end;
+end;
+
+// *****************************************************************************
+// Value Setter - CheckBox Property
+procedure TPropertyPanel.SetCheckBoxPropertyValue(const a_Value: Boolean);
+begin
+  if Assigned(f_CheckBoxProperty) then
+  begin
+    f_CheckBoxProperty.Checked := a_Value;
+  end;
+end;
+
+// *****************************************************************************
+// Value Setter - Spin Property
+procedure TPropertyPanel.SetSpinPropertyValue(const a_Value: Integer);
+begin
+  if Assigned(f_SpinProperty) then
+  begin
+    f_SpinProperty.Value := a_Value;
+  end;
 end;
 
 // *****************************************************************************

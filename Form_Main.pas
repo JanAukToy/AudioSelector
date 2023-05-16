@@ -15,20 +15,25 @@ uses
 type
   TFormMain = class(TForm)
     MainMenu1: TMainMenu;
-    mi_Settings: TMenuItem;
-    mi_LanguageSettings: TMenuItem;
+    mi_LanguageType: TMenuItem;
     mi_Lang_English: TMenuItem;
     mi_Lang_Japanese: TMenuItem;
-    Label1: TLabel;
     pgctrl_Device: TPageControl;
+    mi_StateFilter: TMenuItem;
+    mi_State_All: TMenuItem;
+    mi_State_Active: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure mi_Lang_EnglishClick(Sender: TObject);
-    procedure mi_Lang_JapaneseClick(Sender: TObject);
+    procedure mi_LangTypeClick(Sender: TObject);
+    procedure mi_StateFilterClick(Sender: TObject);
   private
     { Private 宣言 }
     f_AudioDeviceList: TAudioDeviceList;
-    f_DevicePageList: TList<TDevicePage>;
+    f_DevicePageList: TObjectList<TDevicePage>;
+
+    procedure Init(const a_Filter: TDeviceStateFilter);
+    procedure SetLanguage(const a_Type: TLanguageType);
+    procedure SetStateFilter(const a_Filter: TDeviceStateFilter);
   public
     { Public 宣言 }
   end;
@@ -46,22 +51,9 @@ uses
 // *****************************************************************************
 // Constructor
 procedure TFormMain.FormCreate(Sender: TObject);
-var
-  ii: Integer;
 begin
-  // Create Audio Device List
-  f_AudioDeviceList := TAudioDeviceList.Create;
-
-  // Create Device Page List
-  f_DevicePageList := TList<TDevicePage>.Create;
-
-  // Create Device Pages
-  for ii := 0 to f_AudioDeviceList.Count - 1 do
-  begin
-    f_DevicePageList.Add(TDevicePage.Create(Self, f_AudioDeviceList[ii],
-      ltEnglish));
-    f_DevicePageList[ii].PageControl := pgctrl_Device;
-  end;
+  // Initialize
+  Init(sfAll);
 end;
 
 // *****************************************************************************
@@ -73,27 +65,116 @@ begin
 end;
 
 // *****************************************************************************
-// Select Language
-procedure TFormMain.mi_Lang_EnglishClick(Sender: TObject);
+// Initialize
+procedure TFormMain.Init(const a_Filter: TDeviceStateFilter);
 var
-  l_DevicePage: TDevicePage;
+  ii: Integer;
 begin
-  for l_DevicePage in f_DevicePageList do
+  // Destroy Variants
+  FreeAndNil(f_AudioDeviceList);
+  FreeAndNil(f_DevicePageList);
+
+  // Create Audio Device List
+  f_AudioDeviceList := TAudioDeviceList.Create(a_Filter);
+
+  // Create Device Page List
+  f_DevicePageList := TObjectList<TDevicePage>.Create;
+
+  // Create Device Pages
+  for ii := 0 to f_AudioDeviceList.Count - 1 do
   begin
-    l_DevicePage.Language := ltEnglish;
+    f_DevicePageList.Add(TDevicePage.Create(Self, f_AudioDeviceList[ii],
+      ltEnglish));
+    f_DevicePageList[ii].PageControl := pgctrl_Device;
   end;
 end;
 
 // *****************************************************************************
-// Select Language
-procedure TFormMain.mi_Lang_JapaneseClick(Sender: TObject);
+// Language Type Click
+procedure TFormMain.mi_LangTypeClick(Sender: TObject);
+var
+  l_MenuItem: TMenuItem;
+begin
+  l_MenuItem := TMenuItem(Sender) as TMenuItem;
+
+  SetLanguage(TLanguageType(l_MenuItem.Tag));
+end;
+
+// *****************************************************************************
+// Set Language Type
+procedure TFormMain.SetLanguage(const a_Type: TLanguageType);
 var
   l_DevicePage: TDevicePage;
 begin
+  case a_Type of
+    ltEnglish:
+      begin
+        mi_LanguageType.Caption := 'Language';
+        mi_Lang_English.Checked := True;
+        mi_Lang_Japanese.Checked := False;
+        mi_Lang_English.Caption := 'English';
+        mi_Lang_Japanese.Caption := 'Japanese';
+
+        mi_StateFilter.Caption := 'StateFilter';
+        mi_State_All.Caption := 'All';
+        mi_State_Active.Caption := 'Active';
+      end;
+
+    ltJapanese:
+      begin
+        mi_LanguageType.Caption := '言語';
+        mi_Lang_English.Checked := False;
+        mi_Lang_Japanese.Checked := True;
+        mi_Lang_English.Caption := '英語';
+        mi_Lang_Japanese.Caption := '日本語';
+
+        mi_StateFilter.Caption := 'ステートフィルター';
+        mi_State_All.Caption := '全て';
+        mi_State_Active.Caption := 'アクティブ';
+      end;
+  end;
+
   for l_DevicePage in f_DevicePageList do
   begin
-    l_DevicePage.Language := ltJapanese;
+    l_DevicePage.Language := a_Type;
   end;
+end;
+
+// *****************************************************************************
+// StateFilter Click
+procedure TFormMain.mi_StateFilterClick(Sender: TObject);
+var
+  l_MenuItem: TMenuItem;
+begin
+  l_MenuItem := TMenuItem(Sender) as TMenuItem;
+
+  // Set StateFilter
+  SetStateFilter(TDeviceStateFilter(l_MenuItem.Tag));
+end;
+
+// *****************************************************************************
+// Set StateFilter
+procedure TFormMain.SetStateFilter(const a_Filter: TDeviceStateFilter);
+begin
+  case a_Filter of
+    sfAll:
+      begin
+        mi_State_All.Checked := True;
+        mi_State_Active.Checked := False;
+      end;
+
+    sfActive:
+      begin
+        mi_State_All.Checked := False;
+        mi_State_Active.Checked := True;
+      end;
+  end;
+
+  // Reload DeviceList
+  f_AudioDeviceList.Reload(a_Filter);
+
+  // Recreate
+  Init(a_Filter);
 end;
 
 end.

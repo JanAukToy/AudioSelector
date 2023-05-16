@@ -39,22 +39,25 @@ type
     f_FriendlyNamePanel: TPropertyPanel;
 
     procedure SetLanguage(const a_LanguageType: TLanguageType); override;
-    procedure OnChangeDeviceDesc(const a_Value: string);
+    procedure OnChangeDeviceDesc_byPropertyPanel(const a_Value: string);
   public
     procedure RefreshProperties(); override;
+    procedure OnChangeDeviceDesc_bySystem(const a_Value: string);
   end;
 
   // Properties Box - Audio
   TAdudioPropertiesBox = class(TPropertiesBox)
   private
-    f_MasterLevel: TPropertyPanel;
-    f_Mute: TPropertyPanel;
+    f_MasterLevelPanel: TPropertyPanel;
+    f_MutePanel: TPropertyPanel;
 
     procedure SetLanguage(const a_LanguageType: TLanguageType); override;
-    procedure OnChangeMasterLevel(const a_Value: Integer);
-    procedure OnChangeMute(const a_Value: Boolean);
+    procedure OnChangeMasterLevel_byPropertyPanel(const a_Value: Integer);
+    procedure OnChangeMute_byPropertyPanel(const a_Value: Boolean);
   public
     procedure RefreshProperties(); override;
+    procedure OnChangeMasterLevel_bySystem(const a_Value: Integer);
+    procedure OnChangeMute_bySystem(const a_Value: Boolean);
   end;
 
 const
@@ -73,21 +76,24 @@ procedure TAdudioPropertiesBox.SetLanguage(const a_LanguageType: TLanguageType);
 begin
   Self.Caption := IfThen(a_LanguageType = ltEnglish, 'Audio Properties',
     'オーディオ設定');
-  f_MasterLevel.PropertyLabel := IfThen(a_LanguageType = ltEnglish,
+  f_MasterLevelPanel.PropertyLabel := IfThen(a_LanguageType = ltEnglish,
     'MasterLevel', 'マスターレベル');
-  f_Mute.PropertyLabel := IfThen(a_LanguageType = ltEnglish, 'Mute', 'ミュート');
+  f_MutePanel.PropertyLabel := IfThen(a_LanguageType = ltEnglish,
+    'Mute', 'ミュート');
 end;
 
 // *****************************************************************************
-// OnChange Event - MasterLevel
-procedure TAdudioPropertiesBox.OnChangeMasterLevel(const a_Value: Integer);
+// OnChange Property Value by Panel Event - MasterLevel
+procedure TAdudioPropertiesBox.OnChangeMasterLevel_byPropertyPanel
+  (const a_Value: Integer);
 begin
   f_Device.MasterLevel := a_Value / 100;
 end;
 
 // *****************************************************************************
-// OnChange Event - Mute
-procedure TAdudioPropertiesBox.OnChangeMute(const a_Value: Boolean);
+// OnChange Property Value by Panel Event - Mute
+procedure TAdudioPropertiesBox.OnChangeMute_byPropertyPanel
+  (const a_Value: Boolean);
 begin
   f_Device.Mute := a_Value;
 end;
@@ -97,23 +103,39 @@ end;
 procedure TAdudioPropertiesBox.RefreshProperties;
 begin
   // Destroying
-  if Assigned(f_MasterLevel) then
-    FreeAndNil(f_MasterLevel);
-  if Assigned(f_Mute) then
-    FreeAndNil(f_Mute);
+  if Assigned(f_MasterLevelPanel) then
+    FreeAndNil(f_MasterLevelPanel);
+  if Assigned(f_MutePanel) then
+    FreeAndNil(f_MutePanel);
 
   // Create Panels
-  f_MasterLevel := TPropertyPanel.Create(Self, 'MasterLevel');
-  f_Mute := TPropertyPanel.Create(Self, 'Mute');
+  f_MasterLevelPanel := TPropertyPanel.Create(Self, 'MasterLevel');
+  f_MutePanel := TPropertyPanel.Create(Self, 'Mute');
 
   // Set Property
-  f_MasterLevel.SetSpinProperty(Round(f_Device.MasterLevel * 100), False,
-    OnChangeMasterLevel);
-  f_Mute.SetCheckBoxProperty(f_Device.Mute, False, OnChangeMute);
+  f_MasterLevelPanel.CreateSpinProperty(Round(f_Device.MasterLevel * 100),
+    False, OnChangeMasterLevel_byPropertyPanel);
+  f_MutePanel.CreateCheckBoxProperty(f_Device.Mute, False,
+    OnChangeMute_byPropertyPanel);
 
   // Set Parent
-  f_MasterLevel.Parent := Self;
-  f_Mute.Parent := Self;
+  f_MasterLevelPanel.Parent := Self;
+  f_MutePanel.Parent := Self;
+end;
+
+// *****************************************************************************
+// OnChange Property Value by System Event - MasterLevel
+procedure TAdudioPropertiesBox.OnChangeMasterLevel_bySystem
+  (const a_Value: Integer);
+begin
+  f_MasterLevelPanel.SpinPropertyValue := a_Value;
+end;
+
+// *****************************************************************************
+// OnChange Property Value by System Event - Mute
+procedure TAdudioPropertiesBox.OnChangeMute_bySystem(const a_Value: Boolean);
+begin
+  f_MutePanel.CheckBoxPropertyValue := a_Value;
 end;
 
 { TDevicePropertiesBox }
@@ -133,8 +155,9 @@ begin
 end;
 
 // *****************************************************************************
-// OnChange Event - DeviceDesc
-procedure TDevicePropertiesBox.OnChangeDeviceDesc(const a_Value: string);
+// OnChange Property Value by Panel Event - DeviceDesc
+procedure TDevicePropertiesBox.OnChangeDeviceDesc_byPropertyPanel
+  (const a_Value: string);
 begin
   f_Device.DeviceDesc := a_Value;
 end;
@@ -158,16 +181,24 @@ begin
   f_FriendlyNamePanel := TPropertyPanel.Create(Self, 'FriendlyName');
 
   // Set Property
-  f_InterfaceFriendlyNamePanel.SetTextProperty(f_Device.InterfaceFriendlyName,
-    True, nil);
-  f_DeviceDescPanel.SetTextProperty(f_Device.DeviceDesc, False,
-    OnChangeDeviceDesc);
-  f_FriendlyNamePanel.SetTextProperty(f_Device.FriendlyName, True, nil);
+  f_InterfaceFriendlyNamePanel.CreateTextProperty
+    (f_Device.InterfaceFriendlyName, True, nil);
+  f_DeviceDescPanel.CreateTextProperty(f_Device.DeviceDesc, False,
+    OnChangeDeviceDesc_byPropertyPanel);
+  f_FriendlyNamePanel.CreateTextProperty(f_Device.FriendlyName, True, nil);
 
   // Set Parent
   f_InterfaceFriendlyNamePanel.Parent := Self;
   f_DeviceDescPanel.Parent := Self;
   f_FriendlyNamePanel.Parent := Self;
+end;
+
+// *****************************************************************************
+// OnChange Property Value by System Event - DeviceDesc
+procedure TDevicePropertiesBox.OnChangeDeviceDesc_bySystem(
+  const a_Value: string);
+begin
+  ;
 end;
 
 { TPropertiesBox }

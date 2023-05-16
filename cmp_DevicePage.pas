@@ -55,6 +55,12 @@ begin
   f_AudioPropertiesBox := TAdudioPropertiesBox.Create(Self, a_Device,
     a_LanguageType);
 
+  // Register Event Callbacks
+  // a_Device.OnChangeDeviceDesc := ;
+  a_Device.OnChangeMasterLevel :=
+    f_AudioPropertiesBox.OnChangeMasterLevel_bySystem;
+  a_Device.OnChangeMute := f_AudioPropertiesBox.OnChangeMute_bySystem;
+
   // Set Parent
   f_DeviceProperiesBox.Parent := Self;
   f_AudioPropertiesBox.Parent := Self;
@@ -81,6 +87,11 @@ procedure TDevicePage.OnResizeDevicePage(Sender: TObject);
 var
   l_Width: Integer;
 begin
+  if csDestroying in Self.ComponentState then
+  begin
+    Exit;
+  end;
+
   // Resizing Child GroupBox
 
   // Set Width to Propety Box

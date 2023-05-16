@@ -29,6 +29,10 @@ type
       : HRESULT; stdcall;
   end;
 
+  // Change Property Event
+  TOnChangeMasterLevel = procedure(const a_Value: Integer) of object;
+  TOnChangeMute = procedure(const a_Value: Boolean) of object;
+
   // Audio Device Class
   TAudioDevice = class
   private
@@ -54,6 +58,9 @@ type
     f_Min: Single;
     f_Max: Single;
     f_Spin: Single;
+
+    f_OnChangeMasterLevel: TOnChangeMasterLevel;
+    f_OnChangeMute: TOnChangeMute;
 
     function GetChannelLevel(const a_Index: Cardinal): Single;
 
@@ -87,6 +94,10 @@ type
     property Min: Single read f_Min;
     property Max: Single read f_Max;
     property Spin: Single read f_Spin;
+
+    property OnChangeMasterLevel: TOnChangeMasterLevel
+      write f_OnChangeMasterLevel;
+    property OnChangeMute: TOnChangeMute write f_OnChangeMute;
   end;
 
 implementation
@@ -341,11 +352,29 @@ end;
 // Changed Value Notify Event
 procedure TAudioDevice.OnControlChangeNotify(const a_Data
   : AUDIO_VOLUME_NOTIFICATION_DATA);
-var
-  l_Data: AUDIO_VOLUME_NOTIFICATION_DATA;
-begin;
-  l_Data := a_Data;
+begin
+  // Store
+  f_ChannelCount := a_Data.nChannels;
+  // a_Data.afChannelVolumes;
 
+  if (f_MasterLevel <> a_Data.fMasterVolume) and
+    (Assigned(f_OnChangeMasterLevel)) then
+  begin
+    // Store
+    f_MasterLevel := a_Data.fMasterVolume;
+
+    // Callback
+    f_OnChangeMasterLevel(Round(f_MasterLevel * 100));
+  end;
+
+  if (f_Mute <> a_Data.bMuted) and (Assigned(f_OnChangeMute)) then
+  begin
+    // Store
+    f_Mute := a_Data.bMuted;
+
+    // Callback
+    f_OnChangeMute(f_Mute);
+  end;
 end;
 
 end.

@@ -14,16 +14,18 @@ uses
   cls_NotificationClient;
 
 type
+  // Device State Filter
+  TDeviceStateFilter = (sfAll, sfActive);
+
   TAudioDeviceList = class(TObjectList<TAudioDevice>)
   private
     f_DeviceEnumerator: IMMDeviceEnumerator;
     f_DeviceCollection: IMMDeviceCollection;
   public
-    constructor Create(const a_CoInitializeExFlag
-      : ShortInt = COINIT_APARTMENTTHREADED);
+    constructor Create(const a_StateFilter: TDeviceStateFilter);
     destructor Destroy; override;
 
-    procedure Reload();
+    procedure Reload(const a_StateFilter: TDeviceStateFilter);
   end;
 
 implementation
@@ -36,8 +38,7 @@ uses
 
 // *****************************************************************************
 // Constructor
-constructor TAudioDeviceList.Create(const a_CoInitializeExFlag
-  : ShortInt = COINIT_APARTMENTTHREADED);
+constructor TAudioDeviceList.Create(const a_StateFilter: TDeviceStateFilter);
 begin
   inherited Create(True); // Create Self Object List
 
@@ -46,7 +47,7 @@ begin
     CLSCTX_INPROC_SERVER, IID_IMMDeviceEnumerator, f_DeviceEnumerator)) then
   begin
     // Get Audio Device Collection
-    Reload;
+    Reload(a_StateFilter);
   end;
 end;
 
@@ -61,21 +62,33 @@ end;
 
 // *****************************************************************************
 // Reload Self ( ReGet Audio Device Collection
-procedure TAudioDeviceList.Reload();
+procedure TAudioDeviceList.Reload(const a_StateFilter: TDeviceStateFilter);
 var
   ii: Integer;
+  l_Filter: Cardinal;
   l_Count: Cardinal;
   l_Device: IMMDevice;
 begin
   // First, Destroy Device and Clear List
   Self.Clear();
 
+  // Get Filetr
+  case a_StateFilter of
+    sfAll:
+      l_Filter := DEVICE_STATEMASK_ALL;
+    sfActive:
+      l_Filter := DEVICE_STATE_ACTIVE;
+
+  else
+    l_Filter := DEVICE_STATEMASK_ALL;
+  end;
+
   // Check Already Get Class
   if Assigned(f_DeviceEnumerator) then
   begin
     // Get Audio Device Collection (Render = Output Sound)
-    if Succeeded(f_DeviceEnumerator.EnumAudioEndpoints(eRender,
-      DEVICE_STATE_ACTIVE, f_DeviceCollection)) and
+    if Succeeded(f_DeviceEnumerator.EnumAudioEndpoints(eRender, l_Filter,
+      f_DeviceCollection)) and
     // Get Count on Collection
       Succeeded(f_DeviceCollection.GetCount(l_Count)) then
     begin

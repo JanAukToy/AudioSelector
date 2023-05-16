@@ -3,7 +3,7 @@ object FormMain: TFormMain
   Top = 0
   Caption = 'JAT Audio Device Manager'
   ClientHeight = 461
-  ClientWidth = 784
+  ClientWidth = 804
   Color = clBtnFace
   Constraints.MinHeight = 500
   Constraints.MinWidth = 500
@@ -19,39 +19,45 @@ object FormMain: TFormMain
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 15
-  object Label1: TLabel
-    Left = 360
-    Top = 256
-    Width = 38
-    Height = 15
-    Caption = 'Label1'
-  end
   object pgctrl_Device: TPageControl
     Left = 0
     Top = 0
-    Width = 784
+    Width = 804
     Height = 461
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitWidth = 734
+    ExplicitLeft = -48
+    ExplicitWidth = 784
   end
   object MainMenu1: TMainMenu
-    Left = 16
-    Top = 24
-    object mi_Settings: TMenuItem
-      Caption = 'Settings'
-      object mi_LanguageSettings: TMenuItem
-        Caption = 'Language'
-        object mi_Lang_English: TMenuItem
-          Caption = 'English'
-          OnClick = mi_Lang_EnglishClick
-        end
-        object mi_Lang_Japanese: TMenuItem
-          Caption = 'Japanese'
-          OnClick = mi_Lang_JapaneseClick
-        end
+    Left = 24
+    Top = 16
+    object mi_LanguageType: TMenuItem
+      Caption = 'Language'
+      object mi_Lang_English: TMenuItem
+        Caption = 'English'
+        Checked = True
+        OnClick = mi_LangTypeClick
+      end
+      object mi_Lang_Japanese: TMenuItem
+        Tag = 1
+        Caption = 'Japanese'
+        OnClick = mi_LangTypeClick
+      end
+    end
+    object mi_StateFilter: TMenuItem
+      Caption = 'StateFilter'
+      object mi_State_All: TMenuItem
+        Caption = 'All'
+        Checked = True
+        OnClick = mi_StateFilterClick
+      end
+      object mi_State_Active: TMenuItem
+        Tag = 1
+        Caption = 'Active'
+        OnClick = mi_StateFilterClick
       end
     end
   end
