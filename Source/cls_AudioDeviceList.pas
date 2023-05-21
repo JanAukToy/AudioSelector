@@ -19,13 +19,15 @@ type
 
   TAudioDeviceList = class(TObjectList<TAudioDevice>)
   private
+    f_StateFilter: TDeviceStateFilter;
     f_DeviceEnumerator: IMMDeviceEnumerator;
     f_DeviceCollection: IMMDeviceCollection;
+    f_NotificationClient: TNotificationClient;
   public
     constructor Create(const a_StateFilter: TDeviceStateFilter);
     destructor Destroy; override;
-
-    procedure Reload(const a_StateFilter: TDeviceStateFilter);
+    property StateFilter: TDeviceStateFilter write f_StateFilter;
+    procedure Reload;
   end;
 
 implementation
@@ -42,12 +44,24 @@ constructor TAudioDeviceList.Create(const a_StateFilter: TDeviceStateFilter);
 begin
   inherited Create(True); // Create Self Object List
 
+  // Store Filter
+  f_StateFilter := a_StateFilter;
+
   // Get COM ClassÅ@https://learn.microsoft.com/ja-jp/windows/win32/coreaudio/enumerating-audio-devices
-  if Succeeded(CoCreateInstance(CLSID_IMMDeviceEnumerator, nil,
-    CLSCTX_INPROC_SERVER, IID_IMMDeviceEnumerator, f_DeviceEnumerator)) then
+  if Succeeded(CoInitializeEx(nil, COINIT_APARTMENTTHREADED)) and
+    (Succeeded(CoCreateInstance(CLSID_IMMDeviceEnumerator, nil,
+    CLSCTX_INPROC_SERVER, IID_IMMDeviceEnumerator, f_DeviceEnumerator))) then
   begin
-    // Get Audio Device Collection
-    Reload(a_StateFilter);
+    // Create Notification Client
+    f_NotificationClient := TNotificationClient.Create;
+
+    // Register Notification Client
+    if Succeeded(f_DeviceEnumerator.RegisterEndpointNotificationCallback
+      (f_NotificationClient)) then
+    begin
+      // Get Audio Device Collection
+      Reload;
+    end;
   end;
 end;
 
@@ -57,12 +71,25 @@ destructor TAudioDeviceList.Destroy;
 begin
   CoUninitialize();
 
+  if Assigned(f_NotificationClient) then
+  begin
+    // Unregister Notification Client
+    f_DeviceEnumerator.UnregisterEndpointNotificationCallback
+      (f_NotificationClient);
+  end;
+
+  if Assigned(f_NotificationClient) then
+  begin
+    // Destroy Notification Client
+    FreeAndNil(f_NotificationClient);
+  end;
+
   inherited;
 end;
 
 // *****************************************************************************
 // Reload Self ( ReGet Audio Device Collection
-procedure TAudioDeviceList.Reload(const a_StateFilter: TDeviceStateFilter);
+procedure TAudioDeviceList.Reload;
 var
   ii: Integer;
   l_Filter: Cardinal;
@@ -73,7 +100,7 @@ begin
   Self.Clear();
 
   // Get Filetr
-  case a_StateFilter of
+  case f_StateFilter of
     sfAll:
       l_Filter := DEVICE_STATEMASK_ALL;
     sfActive:

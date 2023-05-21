@@ -12,18 +12,20 @@ uses
   JAT.MMDeviceAPI;
 
 type
+  TOnChangeDeviceState = procedure(const a_DeviceId: string) of object;
+
   TNotificationClient = class(TInterfacedObject, IMMNotificationClient)
   private
   public
-    constructor Create();
+    constructor Create;
     destructor Destroy; override;
 
-    function OnDeviceStateChanged(pwstrDeviceId: PWideChar; dwNewState: DWORD)
-      : HResult; stdcall;
-    function OnDeviceAdded(pwstrDeviceId: PWideChar): HResult; stdcall;
-    function OnDeviceRemoved(pwstrDeviceId: PWideChar): HResult; stdcall;
     function OnDefaultDeviceChanged(flow: EDataFlow; role: ERole;
       pwstrDefaultDeviceId: PWideChar): HResult; stdcall;
+    function OnDeviceAdded(pwstrDeviceId: PWideChar): HResult; stdcall;
+    function OnDeviceRemoved(pwstrDeviceId: PWideChar): HResult; stdcall;
+    function OnDeviceStateChanged(pwstrDeviceId: PWideChar; dwNewState: DWORD)
+      : HResult; stdcall;
     function OnPropertyValueChanged(pwstrDeviceId: PWideChar;
       const key: PROPERTYKEY): HResult; stdcall;
   end;
@@ -42,7 +44,6 @@ end;
 // Destructor
 destructor TNotificationClient.Destroy;
 begin
-
   inherited;
 end;
 

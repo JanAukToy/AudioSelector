@@ -31,7 +31,8 @@ type
     f_AudioDeviceList: TAudioDeviceList;
     f_DevicePageList: TObjectList<TDevicePage>;
 
-    procedure Init(const a_Filter: TDeviceStateFilter);
+    procedure InitVar(const a_Filter: TDeviceStateFilter);
+    procedure ReloadDevicePageList;
     procedure SetLanguage(const a_Type: TLanguageType);
     procedure SetStateFilter(const a_Filter: TDeviceStateFilter);
   public
@@ -52,8 +53,11 @@ uses
 // Constructor
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  // Initialize
-  Init(sfAll);
+  // Initialize Variables
+  InitVar(sfAll);
+
+  // Rload Device Page List
+  ReloadDevicePageList;
 end;
 
 // *****************************************************************************
@@ -65,10 +69,8 @@ begin
 end;
 
 // *****************************************************************************
-// Initialize
-procedure TFormMain.Init(const a_Filter: TDeviceStateFilter);
-var
-  ii: Integer;
+// Initialize Variables
+procedure TFormMain.InitVar(const a_Filter: TDeviceStateFilter);
 begin
   // Destroy Variants
   FreeAndNil(f_AudioDeviceList);
@@ -79,12 +81,24 @@ begin
 
   // Create Device Page List
   f_DevicePageList := TObjectList<TDevicePage>.Create;
+end;
 
-  // Create Device Pages
+// *****************************************************************************
+// Reload Device Page List
+procedure TFormMain.ReloadDevicePageList;
+var
+  ii: Integer;
+begin
+  // Clear List
+  f_DevicePageList.Clear;
+
+  // Create List
   for ii := 0 to f_AudioDeviceList.Count - 1 do
   begin
     f_DevicePageList.Add(TDevicePage.Create(Self, f_AudioDeviceList[ii],
       ltEnglish));
+
+    // Assign Control
     f_DevicePageList[ii].PageControl := pgctrl_Device;
   end;
 end;
@@ -170,11 +184,14 @@ begin
       end;
   end;
 
-  // Reload DeviceList
-  f_AudioDeviceList.Reload(a_Filter);
+  // Set Filter
+  f_AudioDeviceList.StateFilter := a_Filter;
 
-  // Recreate
-  Init(a_Filter);
+  // Reload DeviceList
+  f_AudioDeviceList.Reload;
+
+  // Reload Device Page Lsit
+  ReloadDevicePageList;
 end;
 
 end.

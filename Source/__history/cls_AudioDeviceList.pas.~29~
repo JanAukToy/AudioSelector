@@ -1,0 +1,143 @@
+// *****************************************************************************
+// Created by JanAukToy
+// [Github] https://github.com/JanAukToy
+// *****************************************************************************
+unit cls_AudioDeviceList;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.Win.ComObj, System.SyncObjs,
+  System.Generics.Collections, Winapi.Windows, Winapi.ActiveX,
+
+  JAT.MMDeviceAPI, JAT.EndpointVolume, JAT.AudioClient, cls_AudioDevice,
+  cls_NotificationClient;
+
+type
+  // Device State Filter
+  TDeviceStateFilter = (sfAll, sfActive);
+
+  TAudioDeviceList = class(TObjectList<TAudioDevice>)
+  private
+    f_StateFilter: TDeviceStateFilter;
+    f_DeviceEnumerator: IMMDeviceEnumerator;
+    f_DeviceCollection: IMMDeviceCollection;
+    f_NotificationClient: TNotificationClient;
+
+    procedure OnChangeDeviceList(const a_DeviceId: string);
+  public
+    constructor Create(const a_StateFilter: TDeviceStateFilter);
+    destructor Destroy; override;
+    property StateFilter: TDeviceStateFilter write f_StateFilter;
+    procedure Reload;
+  end;
+
+implementation
+
+uses
+  System.StrUtils,
+  Winapi.PropSys;
+
+{ TAudioDevices }
+
+// *****************************************************************************
+// Constructor
+constructor TAudioDeviceList.Create(const a_StateFilter: TDeviceStateFilter);
+begin
+  inherited Create(True); // Create Self Object List
+
+  // Store Filter
+  f_StateFilter := a_StateFilter;
+
+  // Get COM ClassÅ@https://learn.microsoft.com/ja-jp/windows/win32/coreaudio/enumerating-audio-devices
+  if Succeeded(CoCreateInstance(CLSID_IMMDeviceEnumerator, nil,
+    CLSCTX_INPROC_SERVER, IID_IMMDeviceEnumerator, f_DeviceEnumerator)) then
+  begin
+    // Create Notification Client
+    f_NotificationClient := TNotificationClient.Create(OnChangeDeviceList);
+
+    // Register Notification Client
+    if Succeeded(f_DeviceEnumerator.RegisterEndpointNotificationCallback
+      (f_NotificationClient)) then
+    begin
+      // Get Audio Device Collection
+      Reload;
+    end;
+  end;
+end;
+
+// *****************************************************************************
+// Destructor
+destructor TAudioDeviceList.Destroy;
+begin
+  CoUninitialize();
+
+  if Assigned(f_NotificationClient) then
+  begin
+    // Unregister Notification Client
+    f_DeviceEnumerator.UnregisterEndpointNotificationCallback
+      (f_NotificationClient);
+  end;
+
+  if Assigned(f_NotificationClient) then
+  begin
+    // Destroy Notification Client
+    FreeAndNil(f_NotificationClient);
+  end;
+
+  inherited;
+end;
+
+// *****************************************************************************
+// OnChange DeviceList
+procedure TAudioDeviceList.OnChangeDeviceList(const a_DeviceId: string);
+begin
+  Reload;
+end;
+
+// *****************************************************************************
+// Reload Self ( ReGet Audio Device Collection
+procedure TAudioDeviceList.Reload;
+var
+  ii: Integer;
+  l_Filter: Cardinal;
+  l_Count: Cardinal;
+  l_Device: IMMDevice;
+begin
+  // First, Destroy Device and Clear List
+  Self.Clear();
+
+  // Get Filetr
+  case f_StateFilter of
+    sfAll:
+      l_Filter := DEVICE_STATEMASK_ALL;
+    sfActive:
+      l_Filter := DEVICE_STATE_ACTIVE;
+
+  else
+    l_Filter := DEVICE_STATEMASK_ALL;
+  end;
+
+  // Check Already Get Class
+  if Assigned(f_DeviceEnumerator) then
+  begin
+    // Get Audio Device Collection (Render = Output Sound)
+    if Succeeded(f_DeviceEnumerator.EnumAudioEndpoints(eRender, l_Filter,
+      f_DeviceCollection)) and
+    // Get Count on Collection
+      Succeeded(f_DeviceCollection.GetCount(l_Count)) then
+    begin
+      for ii := 0 to l_Count - 1 do
+      begin
+        // Get Device
+        if Succeeded(f_DeviceCollection.Item(ii, l_Device)) then
+        begin
+          // Add List
+          Self.Add(TAudioDevice.Create(l_Device));
+        end;
+      end;
+    end;
+  end;
+end;
+
+end.

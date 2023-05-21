@@ -28,8 +28,6 @@ object FormMain: TFormMain
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitLeft = -48
-    ExplicitWidth = 784
   end
   object MainMenu1: TMainMenu
     Left = 24
